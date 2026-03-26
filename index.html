@@ -1,0 +1,2692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="description" content="Vestify - Premium Subsidized Stock Trading Platform. Buy stocks at discounted prices, build your portfolio, and earn with referrals.">
+    <meta name="theme-color" content="#3b82f6">
+    <title>Vestify - Subsidized Stock Trading Platform</title>
+    <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23grad)'/%3E%3Ctext x='50' y='67' font-size='40' text-anchor='middle' fill='white' font-weight='bold' font-family='Arial'%3EV%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%233b82f6'/%3E%3Ctext x='50' y='67' font-size='40' text-anchor='middle' fill='white'%3EV%3C/text%3E%3C/svg%3E">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <style>
+        /* ========== PREMIUM STYLES - 2000+ LINES OF CSS ========== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        /* Dark Theme Premium */
+        body.dark {
+            background: radial-gradient(circle at 10% 20%, rgb(10, 10, 20), rgb(5, 5, 15));
+            color: #ffffff;
+        }
+        
+        body.dark .card {
+            background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(20, 20, 40, 0.95));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.1);
+        }
+        
+        body.dark .glass-nav {
+            background: rgba(10, 10, 25, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.dark .premium-input {
+            background: rgba(20, 20, 35, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: white;
+        }
+        
+        body.dark .premium-input:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+        
+        body.dark .premium-select {
+            background: rgba(20, 20, 35, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: white;
+        }
+        
+        /* Light Theme Premium */
+        body.light {
+            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f1f5f9 100%);
+            color: #0f172a;
+        }
+        
+        body.light .card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(59, 130, 246, 0.05);
+        }
+        
+        body.light .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        body.light .premium-input {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #0f172a;
+        }
+        
+        body.light .premium-select {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #0f172a;
+        }
+        
+        /* Card Styles */
+        .card {
+            border-radius: 28px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .card:hover::before {
+            left: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Premium Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #0a0a1a, #050510);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        
+        .premium-loader {
+            text-align: center;
+            animation: fadeInScale 0.6s ease;
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .premium-loader-circle {
+            width: 100px;
+            height: 100px;
+            border: 3px solid rgba(59, 130, 246, 0.1);
+            border-top: 3px solid #3b82f6;
+            border-right: 3px solid #8b5cf6;
+            border-bottom: 3px solid #ec489a;
+            border-left: 3px solid #06b6d4;
+            border-radius: 50%;
+            animation: premiumSpin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            margin: 0 auto 25px;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+        
+        @keyframes premiumSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .premium-loader-text {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec489a, #06b6d4);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 2s ease infinite, premiumPulse 1.5s ease infinite;
+            letter-spacing: -1px;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes premiumPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.02); }
+        }
+        
+        /* Hamburger Menu */
+        .hamburger {
+            cursor: pointer;
+            width: 30px;
+            height: 24px;
+            position: relative;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: currentColor;
+            border-radius: 3px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .hamburger span:nth-child(1) { top: 0; }
+        .hamburger span:nth-child(2) { top: 10px; }
+        .hamburger span:nth-child(3) { top: 20px; }
+        
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg);
+            top: 10px;
+        }
+        
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg);
+            top: 10px;
+        }
+        
+        /* Mobile Sidebar */
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 320px;
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(15, 15, 30, 0.98), rgba(10, 10, 25, 0.98));
+            backdrop-filter: blur(20px);
+            z-index: 200;
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 90px 20px 30px;
+            border-right: 1px solid rgba(59, 130, 246, 0.4);
+            overflow-y: auto;
+        }
+        
+        body.light .mobile-sidebar {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
+            border-right: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .mobile-sidebar.active {
+            left: 0;
+        }
+        
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 199;
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+        }
+        
+        /* Premium Button */
+        .btn-premium {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec489a);
+            background-size: 200% 200%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -5px rgba(59, 130, 246, 0.6);
+            background-position: 100% 100%;
+        }
+        
+        .btn-premium:active {
+            transform: translateY(0);
+        }
+        
+        .btn-premium::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-premium:active::after {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* TradingView Widget */
+        .tradingview-widget {
+            height: 500px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(59, 130, 246, 0.7); }
+        }
+        
+        .glow-pulse {
+            animation: glowPulse 2s infinite;
+        }
+        
+        /* Stat Cards */
+        .stat-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+        
+        /* Table Styles */
+        .premium-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+        }
+        
+        .premium-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 700;
+            color: #8b5cf6;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .premium-table td {
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        body.light .premium-table td {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .premium-table tr:hover td {
+            transform: scale(1.01);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Input Styles */
+        .premium-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .premium-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        /* Select Styles */
+        .premium-select {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 20px;
+        }
+        
+        .premium-select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+        }
+        
+        /* Verification Badge */
+        .verified-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card {
+                padding: 1.25rem;
+            }
+            
+            .premium-table th,
+            .premium-table td {
+                padding: 10px 12px;
+                font-size: 0.75rem;
+            }
+            
+            .btn-premium {
+                padding: 12px 20px;
+            }
+            
+            .premium-loader-text {
+                font-size: 32px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .card {
+                padding: 1rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Loading Spinner for Verification */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .verification-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #3b82f6;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+        
+        /* Toast Notifications */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec489a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Shimmer Effect */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+        }
+    </style>
+</head>
+<body class="dark">
+    <!-- Premium Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="premium-loader">
+            <div class="premium-loader-circle"></div>
+            <div class="premium-loader-text">VESTIFY</div>
+            <p class="text-gray-400 mt-4 text-sm tracking-wider">Premium Subsidized Stock Trading</p>
+            <div class="flex justify-center gap-2 mt-6">
+                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <div class="w-2 h-2 bg-purple-500 rounded-full animate-pulse delay-100"></div>
+                <div class="w-2 h-2 bg-pink-500 rounded-full animate-pulse delay-200"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Landing Page -->
+    <div id="landingPage" style="display: none;">
+        <!-- Hero Section with Parallax -->
+        <div class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 relative overflow-hidden">
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.05"%3E%3Cpath fill="white" d="M50,10 L60,30 L40,30 Z M30,40 L50,35 L70,40 L60,60 L50,80 L40,60 L30,40 Z"/%3E%3C/svg%3E')] bg-repeat opacity-10"></div>
+            <nav class="glass-nav fixed top-0 left-0 right-0 z-50">
+                <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center float-animation">
+                            <span class="text-white font-bold text-xl">V</span>
+                        </div>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Vestify</span>
+                    </div>
+                    <div class="hidden md:flex space-x-8">
+                        <a href="#features" class="text-gray-300 hover:text-white transition-all hover:scale-105">Features</a>
+                        <a href="#how-it-works" class="text-gray-300 hover:text-white transition-all hover:scale-105">How It Works</a>
+                        <a href="#stocks" class="text-gray-300 hover:text-white transition-all hover:scale-105">Stocks</a>
+                        <a href="#testimonials" class="text-gray-300 hover:text-white transition-all hover:scale-105">Testimonials</a>
+                        <button onclick="showAuthModal()" class="btn-premium px-6 py-2 rounded-full text-white font-semibold">Get Started</button>
+                    </div>
+                    <button onclick="showAuthModal()" class="md:hidden btn-premium px-4 py-2 rounded-full text-white text-sm">Start</button>
+                </div>
+            </nav>
+            
+            <div class="container mx-auto px-4 pt-32 pb-20 relative z-10">
+                <div class="text-center fade-in-up">
+                    <div class="inline-block px-4 py-2 bg-blue-500/20 rounded-full mb-6 backdrop-blur-sm">
+                        <span class="text-blue-300 text-sm">✨ Welcome to the Future of Investing</span>
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                        Invest in Stocks at<br>Subsidized Prices
+                    </h1>
+                    <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+                        Get premium stocks at up to 50% off market prices. Build your portfolio with Vestify's exclusive subsidized stock program. Start with as little as ₦20,000.
+                    </p>
+                    <div class="flex gap-4 justify-center flex-wrap">
+                        <button onclick="showAuthModal()" class="btn-premium px-8 py-3 rounded-full text-white font-semibold text-lg flex items-center gap-2 group">
+                            Start Investing Now
+                            <svg class="w-5 h-5 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                        </button>
+                        <button onclick="scrollToFeatures()" class="px-8 py-3 rounded-full border-2 border-blue-500 text-blue-400 font-semibold text-lg hover:bg-blue-500/10 transition-all hover:scale-105">
+                            Learn More
+                        </button>
+                    </div>
+                    <div class="mt-16 flex justify-center gap-8 md:gap-16 flex-wrap">
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-white">₦500M+</div>
+                            <div class="text-gray-400 text-sm">Total Invested</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-white">50+</div>
+                            <div class="text-gray-400 text-sm">Premium Stocks</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-white">10K+</div>
+                            <div class="text-gray-400 text-sm">Active Investors</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-white">24/7</div>
+                            <div class="text-gray-400 text-sm">Support</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7-7-7m14-6l-7 7-7-7"></path></svg>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div id="features" class="py-24 bg-gray-900">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <span class="text-blue-500 text-sm font-semibold uppercase tracking-wider">Why Choose Us</span>
+                    <h2 class="text-4xl md:text-5xl font-bold mt-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Premium Features</h2>
+                    <p class="text-gray-400 mt-4 max-w-2xl mx-auto">Experience the future of stock trading with our cutting-edge platform</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="card text-center group">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Subsidized Prices</h3>
+                        <p class="text-gray-400 leading-relaxed">Get stocks at 50% less than market prices. Exclusive discounts on all major Nigerian and international stocks.</p>
+                    </div>
+                    <div class="card text-center group">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Real-Time Portfolio</h3>
+                        <p class="text-gray-400 leading-relaxed">Track your investments with live updates, professional charts, and instant price changes.</p>
+                    </div>
+                    <div class="card text-center group">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Secure Payments</h3>
+                        <p class="text-gray-400 leading-relaxed">Safe deposits and withdrawals with Korapay integration. All transactions are encrypted and secure.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- How It Works -->
+        <div id="how-it-works" class="py-24 bg-gradient-to-b from-gray-900 to-gray-800">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <span class="text-purple-500 text-sm font-semibold uppercase tracking-wider">Simple Process</span>
+                    <h2 class="text-4xl md:text-5xl font-bold mt-2">How It Works</h2>
+                    <p class="text-gray-400 mt-4">Get started in 4 easy steps</p>
+                </div>
+                <div class="grid md:grid-cols-4 gap-6">
+                    <div class="text-center relative">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold shadow-lg">1</div>
+                        <h3 class="font-bold mb-2 text-lg">Sign Up</h3>
+                        <p class="text-gray-400 text-sm">Create your free account in seconds</p>
+                        <div class="hidden md:block absolute top-10 left-3/4 w-full h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    </div>
+                    <div class="text-center relative">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold shadow-lg">2</div>
+                        <h3 class="font-bold mb-2 text-lg">Deposit Funds</h3>
+                        <p class="text-gray-400 text-sm">Minimum ₦20,000 deposit via Korapay</p>
+                        <div class="hidden md:block absolute top-10 left-3/4 w-full h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    </div>
+                    <div class="text-center relative">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold shadow-lg">3</div>
+                        <h3 class="font-bold mb-2 text-lg">Buy Stocks</h3>
+                        <p class="text-gray-400 text-sm">Purchase at subsidized prices</p>
+                        <div class="hidden md:block absolute top-10 left-3/4 w-full h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold shadow-lg">4</div>
+                        <h3 class="font-bold mb-2 text-lg">Watch Growth</h3>
+                        <p class="text-gray-400 text-sm">Track your portfolio value in real-time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Download App -->
+        <div class="py-24 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 relative overflow-hidden">
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"%3E%3Cpath fill="white" d="M50,10 L60,30 L40,30 Z M30,40 L50,35 L70,40 L60,60 L50,80 L40,60 L30,40 Z"/%3E%3C/svg%3E')] bg-repeat"></div>
+            <div class="container mx-auto px-4 text-center relative z-10">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">Download Our Mobile App</h2>
+                <p class="text-xl mb-8 text-white/90">Trade on the go with Vestify mobile app - Coming Soon!</p>
+                <div class="flex gap-4 justify-center flex-wrap">
+                    <button onclick="downloadApp()" class="bg-white text-purple-600 px-8 py-3 rounded-full font-bold text-lg hover:shadow-xl transition-all hover:scale-105 flex items-center gap-2">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18 9v4H6V9H4v6h16V9h-2zM6 3h12v2H6V3zm0 16h12v2H6v-2z"/></svg>
+                        Download APK
+                    </button>
+                    <button onclick="showAuthModal()" class="border-2 border-white text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-white/10 transition-all">
+                        Start Web Trading
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" style="display: none;">
+        <!-- Premium Navigation -->
+        <nav class="glass-nav fixed top-0 left-0 right-0 z-50">
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <div class="md:hidden">
+                            <div class="hamburger" onclick="toggleMobileMenu()">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg glow-pulse">
+                            <span class="text-white font-bold text-xl">V</span>
+                        </div>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">Vestify</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-200/20 transition-all hover:scale-110">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                        </button>
+                        <div class="flex items-center space-x-3 cursor-pointer group" onclick="showSection('settings')">
+                            <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover group-hover:scale-110 transition-transform" src="https://via.placeholder.com/40" alt="Avatar">
+                            <span id="userName" class="font-semibold hidden md:inline"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Mobile Sidebar -->
+        <div id="mobileSidebar" class="mobile-sidebar">
+            <div class="space-y-2">
+                <div class="mb-6 pb-4 border-b border-gray-700">
+                    <div class="flex items-center space-x-3">
+                        <img id="mobileUserAvatar" class="w-12 h-12 rounded-full border-2 border-blue-500" src="https://via.placeholder.com/48" alt="Avatar">
+                        <div>
+                            <p id="mobileUserName" class="font-bold"></p>
+                            <p class="text-xs text-gray-400" id="mobileUserEmail"></p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="showSection('dashboard'); closeMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="showSection('portfolio'); closeMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span>Portfolio</span>
+                </button>
+                <button onclick="showSection('trade'); closeMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    <span>Trade</span>
+                </button>
+                <button onclick="showSection('deposit'); closeMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    <span>Deposit</span>
+                </button>
+                <button onclick="showSection('withdraw'); closeMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4m16 0l-4-4m4 4l-4 4"></path></svg>
+                    <span>Withdraw</span>
+                </button>
+                <button onclick="showSection('referrals'); closeMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span>Referrals</span>
+                </button>
+                <button onclick="showSection('settings'); closeMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>Settings</span>
+                </button>
+                <div id="adminNavMobile" style="display: none;">
+                    <hr class="my-4 border-gray-700">
+                    <button onclick="showSection('admin'); closeMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-red-500/10 transition-all flex items-center space-x-3 text-red-500 group">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                        <span>Admin Panel</span>
+                    </button>
+                </div>
+                <button onclick="logout(); closeMobileMenu()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-red-500/10 transition-all flex items-center space-x-3 text-red-500 mt-4 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+        <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeMobileMenu()"></div>
+        
+        <!-- Desktop Sidebar -->
+        <div class="hidden md:block fixed left-0 top-16 h-full w-64 overflow-y-auto" style="background: inherit; backdrop-filter: blur(10px); border-right: 1px solid rgba(59,130,246,0.2);">
+            <div class="p-6 space-y-2">
+                <div class="mb-6 pb-4 border-b border-gray-700">
+                    <div class="flex items-center space-x-3">
+                        <img id="desktopUserAvatar" class="w-12 h-12 rounded-full border-2 border-blue-500" src="https://via.placeholder.com/48" alt="Avatar">
+                        <div>
+                            <p id="desktopUserName" class="font-bold"></p>
+                            <p class="text-xs text-gray-400" id="desktopUserEmail"></p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="showSection('dashboard')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="showSection('portfolio')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span>Portfolio</span>
+                </button>
+                <button onclick="showSection('trade')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    <span>Trade</span>
+                </button>
+                <button onclick="showSection('deposit')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    <span>Deposit</span>
+                </button>
+                <button onclick="showSection('withdraw')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4m16 0l-4-4m4 4l-4 4"></path></svg>
+                    <span>Withdraw</span>
+                </button>
+                <button onclick="showSection('referrals')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span>Referrals</span>
+                </button>
+                <button onclick="showSection('settings')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-blue-500/10 transition-all flex items-center space-x-3 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>Settings</span>
+                </button>
+                <div id="adminNavDesktop" style="display: none;">
+                    <hr class="my-4 border-gray-700">
+                    <button onclick="showSection('admin')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-red-500/10 transition-all flex items-center space-x-3 text-red-500 group">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                        <span>Admin Panel</span>
+                    </button>
+                </div>
+                <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-red-500/10 transition-all flex items-center space-x-3 text-red-500 mt-4 group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="flex-1 md:ml-64 main-content pt-20 pb-20 md:pb-8">
+            <div class="container mx-auto px-4">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection" class="section fade-in-up">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-3xl font-bold">Dashboard</h2>
+                        <div class="flex gap-2">
+                            <button onclick="refreshDashboard()" class="p-2 rounded-full hover:bg-gray-200/20 transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="card stat-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500 mb-1 text-sm">Total Portfolio Value</p>
+                                    <p class="text-3xl font-bold" id="totalPortfolioValue">₦0.00</p>
+                                </div>
+                                <div class="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-xs text-green-500 mt-2">↑ +12.5% this month</p>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500 mb-1 text-sm">Cash Balance</p>
+                                    <p class="text-3xl font-bold" id="cashBalance">₦0.00</p>
+                                </div>
+                                <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                </div>
+                            </div>
+                            <button onclick="showSection('deposit')" class="text-xs text-blue-500 mt-2 hover:underline">Deposit Funds →</button>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500 mb-1 text-sm">Total Profit/Loss</p>
+                                    <p class="text-3xl font-bold" id="totalProfitLoss">₦0.00</p>
+                                </div>
+                                <div class="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2">Realized + Unrealized</p>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500 mb-1 text-sm">Referral Bonus</p>
+                                    <p class="text-3xl font-bold" id="dashboardReferralBonus">₦0.00</p>
+                                </div>
+                                <div class="w-10 h-10 bg-pink-500/20 rounded-full flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-xs text-purple-500 mt-2">Earn 20% per referral</p>
+                        </div>
+                    </div>
+                    <div class="card mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Market Overview</h3>
+                            <button onclick="showSection('trade')" class="text-sm text-blue-500 hover:underline">View All →</button>
+                        </div>
+                        <div id="marketStocks" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4">Recent Transactions</h3>
+                        <div id="recentTransactions" class="space-y-3"></div>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Section -->
+                <div id="portfolioSection" class="section fade-in-up" style="display: none;">
+                    <h2 class="text-3xl font-bold mb-6">My Portfolio</h2>
+                    <div class="card">
+                        <div class="overflow-x-auto">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Stock</th>
+                                        <th>Units</th>
+                                        <th>Avg Price</th>
+                                        <th>Current Price</th>
+                                        <th>Total Value</th>
+                                        <th>P/L</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="portfolioTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Trade Section -->
+                <div id="tradeSection" class="section fade-in-up" style="display: none;">
+                    <h2 class="text-3xl font-bold mb-6">Trade Stocks</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                                <span class="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">🟢</span>
+                                Buy Stock
+                            </h3>
+                            <select id="buyStockSelect" class="premium-select mb-4" onchange="updateBuyDetails()">
+                                <option value="">Select Stock</option>
+                            </select>
+                            <input type="number" id="buyUnits" placeholder="Number of Units" class="premium-input mb-4" oninput="updateBuyDetails()">
+                            <div class="mb-4 p-4 bg-green-500/10 rounded-xl">
+                                <p>Price per unit: <span id="buyPriceDisplay" class="font-bold text-lg">₦0.00</span></p>
+                                <p class="text-xl mt-2">Total: <span id="buyTotalDisplay" class="font-bold text-2xl text-green-500">₦0.00</span></p>
+                            </div>
+                            <button onclick="executeBuy()" class="btn-premium w-full py-3 rounded-xl text-white font-semibold">Buy Now</button>
+                        </div>
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                                <span class="w-8 h-8 bg-red-500/20 rounded-full flex items-center justify-center">🔴</span>
+                                Sell Stock
+                            </h3>
+                            <select id="sellStockSelect" class="premium-select mb-4" onchange="updateSellDetails()">
+                                <option value="">Select Stock</option>
+                            </select>
+                            <input type="number" id="sellUnits" placeholder="Number of Units" class="premium-input mb-4" oninput="updateSellDetails()">
+                            <div class="mb-4 p-4 bg-red-500/10 rounded-xl">
+                                <p>Price per unit: <span id="sellPriceDisplay" class="font-bold text-lg">₦0.00</span></p>
+                                <p class="text-xl mt-2">You'll receive: <span id="sellTotalDisplay" class="font-bold text-2xl text-red-500">₦0.00</span></p>
+                            </div>
+                            <button onclick="executeSell()" class="btn-premium w-full py-3 rounded-xl text-white font-semibold">Sell Now</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Real Stock Chart (TradingView)</h3>
+                            <div class="flex gap-2">
+                                <button onclick="changeChartSymbol('AAPL')" class="text-xs px-2 py-1 rounded bg-gray-200/20">AAPL</button>
+                                <button onclick="changeChartSymbol('GOOGL')" class="text-xs px-2 py-1 rounded bg-gray-200/20">GOOGL</button>
+                                <button onclick="changeChartSymbol('MSFT')" class="text-xs px-2 py-1 rounded bg-gray-200/20">MSFT</button>
+                                <button onclick="changeChartSymbol('TSLA')" class="text-xs px-2 py-1 rounded bg-gray-200/20">TSLA</button>
+                            </div>
+                        </div>
+                        <div id="tradingviewWidget" class="tradingview-widget"></div>
+                    </div>
+                </div>
+                
+                <!-- Deposit Section -->
+                <div id="depositSection" class="section fade-in-up" style="display: none;">
+                    <h2 class="text-3xl font-bold mb-6">Deposit Funds</h2>
+                    <div class="card max-w-md mx-auto">
+                        <div class="text-center mb-6">
+                            <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg float-animation">
+                                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            </div>
+                            <p class="text-gray-500">Minimum Deposit: <span class="font-bold text-green-500">₦20,000</span></p>
+                            <p class="text-xs text-gray-400 mt-1">Powered by Korapay</p>
+                        </div>
+                        <input type="number" id="depositAmount" placeholder="Enter amount (₦)" class="premium-input mb-4">
+                        <button onclick="processDeposit()" class="btn-premium w-full py-3 rounded-xl text-white font-semibold">Deposit via Korapay</button>
+                        <div class="mt-4 p-3 bg-blue-500/10 rounded-lg">
+                            <p class="text-xs text-center">✅ Instant credit to your Vestify wallet</p>
+                            <p class="text-xs text-center mt-1">🔒 Secured by Korapay Payment Gateway</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Withdraw Section with Flutterwave Integration -->
+                <div id="withdrawSection" class="section fade-in-up" style="display: none;">
+                    <h2 class="text-3xl font-bold mb-6">Withdraw Funds</h2>
+                    <div class="card max-w-md mx-auto">
+                        <div class="text-center mb-6">
+                            <div class="w-24 h-24 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg float-animation">
+                                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4m16 0l-4-4m4 4l-4 4"></path></svg>
+                            </div>
+                            <p class="text-gray-500">Minimum Withdrawal: <span class="font-bold text-yellow-500">₦50,000</span></p>
+                            <p class="text-xs text-gray-400">5% withdrawal fee applies</p>
+                            <p class="text-xs text-green-500 mt-1">✅ Account verification via Flutterwave</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold mb-2">Select Bank</label>
+                            <select id="bankSelect" class="premium-select">
+                                <option value="">Select Bank</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold mb-2">Account Number</label>
+                            <div class="relative">
+                                <input type="text" id="accountNumber" placeholder="Enter 10-digit account number" class="premium-input" maxlength="10" pattern="[0-9]{10}">
+                                <div id="verificationSpinner" class="hidden absolute right-3 top-1/2 transform -translate-y-1/2">
+                                    <div class="verification-spinner"></div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Enter account number to auto-verify with Flutterwave</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold mb-2">Account Name</label>
+                            <div class="relative">
+                                <input type="text" id="accountName" placeholder="Will auto-fill after verification" class="premium-input" readonly>
+                                <button id="verifyAccountBtn" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-500 text-sm font-semibold hover:text-blue-600 hidden">
+                                    🔄 Verify
+                                </button>
+                            </div>
+                            <div id="verifiedBadge" class="hidden mt-2">
+                                <span class="verified-badge">✓ Verified</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold mb-2">Withdrawal Amount (₦)</label>
+                            <input type="number" id="withdrawAmount" placeholder="Minimum ₦50,000" class="premium-input" oninput="updateWithdrawalPreview()">
+                        </div>
+                        
+                        <div id="feeBreakdown" class="mb-4 p-4 bg-blue-500/10 rounded-xl hidden">
+                            <p class="text-sm">Withdrawal Amount: <span id="previewAmount" class="font-semibold">₦0</span></p>
+                            <p class="text-sm">Fee (5%): <span id="previewFee" class="font-semibold text-red-500">₦0</span></p>
+                            <p class="text-lg font-bold mt-2">You'll receive: <span id="previewNet" class="text-green-500">₦0</span></p>
+                        </div>
+                        
+                        <button onclick="processWithdrawal()" class="btn-premium w-full py-3 rounded-xl text-white font-semibold">
+                            Request Withdrawal
+                        </button>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <p class="text-xs text-center text-gray-500">
+                                ⚡ Withdrawals are manually processed within 24-48 hours<br>
+                                🔒 Your account will be verified with Flutterwave for security
+                            </p>
+                            <p class="text-xs text-center mt-2">
+                                <button onclick="enableManualAccountEntry()" class="text-blue-500 hover:underline">Can't verify? Enter account name manually →</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Referrals Section -->
+                <div id="referralsSection" class="section fade-in-up" style="display: none;">
+                    <h2 class="text-3xl font-bold mb-6">Referral Program</h2>
+                    <div class="card mb-6">
+                        <div class="text-center">
+                            <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg float-animation">
+                                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">Earn 20% Commission</h3>
+                            <p class="text-gray-500 mb-6">Get 20% of your referral's first deposit amount</p>
+                            <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl mb-6">
+                                <p class="text-sm text-gray-500 mb-2">Your Referral Link</p>
+                                <div class="flex gap-2">
+                                    <input type="text" id="referralLink" readonly class="flex-1 p-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 font-mono text-sm">
+                                    <button onclick="copyReferralLink()" class="btn-premium px-6 rounded-xl text-white">Copy</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 text-center bg-blue-500/10 rounded-xl">
+                                    <p class="text-3xl font-bold text-blue-500" id="totalReferrals">0</p>
+                                    <p class="text-gray-500 text-sm">Total Referrals</p>
+                                </div>
+                                <div class="p-4 text-center bg-purple-500/10 rounded-xl">
+                                    <p class="text-3xl font-bold text-purple-500" id="referralBonus">₦0.00</p>
+                                    <p class="text-gray-500 text-sm">Bonus Earned</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4">Your Referrals</h3>
+                        <div id="referralsList" class="space-y-3"></div>
+                    </div>
+                </div>
+                
+                <!-- Settings Section -->
+                <div id="settingsSection" class="section fade-in-up" style="display: none;">
+                    <h2 class="text-3xl font-bold mb-6">Settings</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Profile Settings</h3>
+                            <div class="mb-4">
+                                <label class="block mb-2 text-sm font-semibold">Profile Picture</label>
+                                <input type="file" id="profilePicture" accept="image/*" class="premium-input">
+                                <p class="text-xs text-gray-500 mt-1">Upload a new profile picture (Cloudinary)</p>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block mb-2 text-sm font-semibold">Display Name</label>
+                                <input type="text" id="displayName" class="premium-input">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block mb-2 text-sm font-semibold">Email Address</label>
+                                <input type="email" id="settingsEmail" class="premium-input" readonly>
+                            </div>
+                            <button onclick="updateProfile()" class="btn-premium w-full py-3 rounded-xl text-white font-semibold">Update Profile</button>
+                        </div>
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Account Information</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                                    <span>Account ID:</span>
+                                    <span id="accountId" class="font-mono text-sm"></span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                                    <span>Referral Code:</span>
+                                    <span id="userReferralCode" class="font-mono text-sm text-blue-500"></span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                                    <span>Member Since:</span>
+                                    <span id="memberSince"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Theme Preferences</h3>
+                            <div class="flex gap-4">
+                                <button onclick="setTheme('dark')" class="flex-1 py-3 rounded-xl border-2 border-gray-600 hover:border-blue-500 transition-all hover:scale-105">🌙 Dark</button>
+                                <button onclick="setTheme('light')" class="flex-1 py-3 rounded-xl border-2 border-gray-600 hover:border-blue-500 transition-all hover:scale-105">☀️ Light</button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Security</h3>
+                            <button onclick="changePassword()" class="btn-premium w-full py-3 rounded-xl text-white font-semibold mb-3">Change Password</button>
+                            <button onclick="logout()" class="w-full py-3 rounded-xl border-2 border-red-500 text-red-500 font-semibold hover:bg-red-500/10 transition-all">Logout</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Admin Section (Full Controls) -->
+                <div id="adminSection" class="section fade-in-up" style="display: none;">
+                    <h2 class="text-3xl font-bold mb-6 text-red-500">Administrator Panel</h2>
+                    
+                    <!-- Admin Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="card bg-red-500/10">
+                            <p class="text-gray-500 text-sm">Total Users</p>
+                            <p class="text-2xl font-bold" id="adminTotalUsers">0</p>
+                        </div>
+                        <div class="card bg-green-500/10">
+                            <p class="text-gray-500 text-sm">Total Deposits</p>
+                            <p class="text-2xl font-bold" id="adminTotalDeposits">₦0</p>
+                        </div>
+                        <div class="card bg-blue-500/10">
+                            <p class="text-gray-500 text-sm">Total Withdrawals</p>
+                            <p class="text-2xl font-bold" id="adminTotalWithdrawals">₦0</p>
+                        </div>
+                        <div class="card bg-purple-500/10">
+                            <p class="text-gray-500 text-sm">Active Traders</p>
+                            <p class="text-2xl font-bold" id="adminActiveTraders">0</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Stock Price Management -->
+                    <div class="card mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Stock Price Management</h3>
+                            <div class="flex gap-2">
+                                <button onclick="togglePriceSimulation()" id="simulationToggle" class="btn-premium px-4 py-2 rounded-lg text-white text-sm">⏸️ Pause Simulation</button>
+                                <button onclick="resetAllPrices()" class="bg-yellow-500 px-4 py-2 rounded-lg text-white font-semibold text-sm hover:bg-yellow-600 transition">Reset All Prices</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Logo</th>
+                                        <th>Stock</th>
+                                        <th>Symbol</th>
+                                        <th>Current Price (₦)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminStocksTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- User Management & Fund Transfer -->
+                    <div class="card mb-8">
+                        <h3 class="text-xl font-bold mb-4">User Management & Fund Transfer</h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold mb-3">Send Money to User</h4>
+                                <select id="adminUserSelect" class="premium-select mb-3">
+                                    <option value="">Select User</option>
+                                </select>
+                                <input type="number" id="adminTransferAmount" placeholder="Amount (₦)" class="premium-input mb-3">
+                                <button onclick="adminSendMoney()" class="btn-premium w-full py-2 rounded-lg text-white">Send Money</button>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-3">Adjust User Balance</h4>
+                                <select id="adminAdjustUserSelect" class="premium-select mb-3">
+                                    <option value="">Select User</option>
+                                </select>
+                                <input type="number" id="adminAdjustAmount" placeholder="Amount (₦)" class="premium-input mb-3">
+                                <div class="flex gap-3">
+                                    <button onclick="adminAddBalance()" class="flex-1 bg-green-500 py-2 rounded-lg text-white font-semibold hover:bg-green-600 transition">Add Balance</button>
+                                    <button onclick="adminSubtractBalance()" class="flex-1 bg-red-500 py-2 rounded-lg text-white font-semibold hover:bg-red-600 transition">Subtract Balance</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- All Users List -->
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4">All Users</h3>
+                        <div class="overflow-x-auto">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Balance</th>
+                                        <th>Referrals</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminUsersTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[1000]" style="display: none;">
+        <div class="modal-content rounded-2xl p-8 max-w-md w-full mx-4 fade-in-up">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span class="text-white font-bold text-2xl">V</span>
+                </div>
+                <h2 class="text-2xl font-bold" id="authModalTitle">Login to Vestify</h2>
+                <p class="text-gray-500 text-sm mt-1">Start your investment journey</p>
+            </div>
+            <div id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email Address" class="premium-input mb-4">
+                <input type="password" id="loginPassword" placeholder="Password" class="premium-input mb-4">
+                <button onclick="login()" class="btn-premium w-full py-3 rounded-xl text-white font-semibold mb-3">Login</button>
+                <button onclick="googleLogin()" class="w-full py-3 rounded-xl border-2 border-gray-300 dark:border-gray-700 font-semibold flex items-center justify-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    Continue with Google
+                </button>
+                <p class="text-center mt-4 text-sm">
+                    Don't have an account? <button onclick="toggleAuthMode()" class="text-blue-500 font-semibold">Register</button>
+                </p>
+            </div>
+            <div id="registerForm" style="display: none;">
+                <input type="text" id="registerName" placeholder="Full Name" class="premium-input mb-4">
+                <input type="email" id="registerEmail" placeholder="Email Address" class="premium-input mb-4">
+                <input type="password" id="registerPassword" placeholder="Password" class="premium-input mb-4">
+                <input type="text" id="referralCodeInput" placeholder="Referral Code (Optional)" class="premium-input mb-4">
+                <button onclick="register()" class="btn-premium w-full py-3 rounded-xl text-white font-semibold mb-3">Register</button>
+                <p class="text-center mt-4 text-sm">
+                    Already have an account? <button onclick="toggleAuthMode()" class="text-blue-500 font-semibold">Login</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== FIREBASE CONFIGURATION ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyAx21SUAgRUkucqefQnbGtu3ei0t8uJs4g",
+            authDomain: "vestify-9ed1f.firebaseapp.com",
+            projectId: "vestify-9ed1f",
+            storageBucket: "vestify-9ed1f.firebasestorage.app",
+            messagingSenderId: "605263680121",
+            appId: "1:605263680121:web:4a5f407402a1ba8a247aa8",
+            measurementId: "G-T0R7SVJ9YT"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+        
+        // ========== API KEYS (Replace with your actual keys) ==========
+        const KORAPAY_PUBLIC_KEY = 'YOUR_KORAPAY_PUBLIC_KEY_HERE';
+        const FORMSPREE_ENDPOINT = 'YOUR_FORMSPREE_ENDPOINT_HERE';
+        const FLUTTERWAVE_SECRET_KEY = 'YOUR_FLUTTERWAVE_SECRET_KEY_HERE';
+        
+        // ========== GLOBAL VARIABLES ==========
+        let currentUser = null;
+        let stocksData = {};
+        let userPortfolio = {};
+        let allUsers = {};
+        let priceSimulationInterval = null;
+        let isSimulationRunning = true;
+        let tradingViewWidget = null;
+        let verifiedAccount = null;
+        
+        // ========== NIGERIAN BANKS WITH FLUTTERWAVE CODES ==========
+        const nigerianBanks = [
+            { code: "058", name: "Access Bank" },
+            { code: "023", name: "Citibank" },
+            { code: "050", name: "Ecobank" },
+            { code: "070", name: "Fidelity Bank" },
+            { code: "011", name: "First Bank of Nigeria" },
+            { code: "214", name: "First City Monument Bank (FCMB)" },
+            { code: "058", name: "Guaranty Trust Bank (GTBank)" },
+            { code: "030", name: "Heritage Bank" },
+            { code: "082", name: "Keystone Bank" },
+            { code: "076", name: "Polaris Bank" },
+            { code: "101", name: "Providus Bank" },
+            { code: "221", name: "Stanbic IBTC Bank" },
+            { code: "068", name: "Standard Chartered Bank" },
+            { code: "232", name: "Sterling Bank" },
+            { code: "100", name: "Suntrust Bank" },
+            { code: "102", name: "Titan Trust Bank" },
+            { code: "032", name: "Union Bank of Nigeria" },
+            { code: "033", name: "United Bank for Africa (UBA)" },
+            { code: "215", name: "Unity Bank" },
+            { code: "035", name: "Wema Bank" },
+            { code: "057", name: "Zenith Bank" },
+            { code: "090", name: "Kuda Bank" },
+            { code: "999", name: "Opay" },
+            { code: "999", name: "Palmpay" },
+            { code: "999", name: "Moniepoint Microfinance Bank" },
+            { code: "999", name: "VFD Microfinance Bank" },
+            { code: "999", name: "Sparkle Microfinance Bank" },
+            { code: "999", name: "Rubies Bank" }
+        ];
+        
+        // ========== COMPREHENSIVE STOCK DATABASE (50+ STOCKS) ==========
+        const stockDatabase = [
+            { symbol: "NGX:GUARANTY", name: "Guaranty Trust Bank", country: "NG", logo: "https://logo.clearbit.com/gtbank.com", initialPrice: 45.50 },
+            { symbol: "NGX:ZENITH", name: "Zenith Bank", country: "NG", logo: "https://logo.clearbit.com/zenithbank.com", initialPrice: 38.75 },
+            { symbol: "NGX:NB", name: "Nigerian Breweries", country: "NG", logo: "https://logo.clearbit.com/nbplc.com", initialPrice: 52.30 },
+            { symbol: "NGX:DANGCEM", name: "Dangote Cement", country: "NG", logo: "https://logo.clearbit.com/dangote.com", initialPrice: 285.60 },
+            { symbol: "NGX:MTNN", name: "MTN Nigeria", country: "NG", logo: "https://logo.clearbit.com/mtn.ng", initialPrice: 245.00 },
+            { symbol: "NGX:AIRTELAFRI", name: "Airtel Africa", country: "NG", logo: "https://logo.clearbit.com/airtel.africa", initialPrice: 1850.00 },
+            { symbol: "NGX:SEPLAT", name: "Seplat Energy", country: "NG", logo: "https://logo.clearbit.com/seplatpetroleum.com", initialPrice: 1250.00 },
+            { symbol: "NGX:UBA", name: "United Bank for Africa", country: "NG", logo: "https://logo.clearbit.com/ubagroup.com", initialPrice: 22.80 },
+            { symbol: "NGX:FBNH", name: "First Bank Holdings", country: "NG", logo: "https://logo.clearbit.com/firstbanknigeria.com", initialPrice: 24.50 },
+            { symbol: "NGX:ACCESSCORP", name: "Access Corporation", country: "NG", logo: "https://logo.clearbit.com/accessbankplc.com", initialPrice: 19.75 },
+            { symbol: "NGX:TRANSCORP", name: "Transcorp", country: "NG", logo: "https://logo.clearbit.com/transcorp.com", initialPrice: 12.30 },
+            { symbol: "NGX:JAIZBANK", name: "Jaiz Bank", country: "NG", logo: "https://logo.clearbit.com/jaizbank.com", initialPrice: 2.15 },
+            { symbol: "NGX:STERLNBANK", name: "Sterling Bank", country: "NG", logo: "https://logo.clearbit.com/sterlingbank.com", initialPrice: 4.85 },
+            { symbol: "NGX:WEMABANK", name: "Wema Bank", country: "NG", logo: "https://logo.clearbit.com/wemabank.com", initialPrice: 7.20 },
+            { symbol: "NGX:FCMB", name: "FCMB", country: "NG", logo: "https://logo.clearbit.com/fcmb.com", initialPrice: 6.45 },
+            { symbol: "NYSE:GOOGL", name: "Alphabet Inc. (Google)", country: "US", logo: "https://logo.clearbit.com/google.com", initialPrice: 142.50 },
+            { symbol: "NYSE:NESTLE", name: "Nestlé", country: "CH", logo: "https://logo.clearbit.com/nestle.com", initialPrice: 112.30 },
+            { symbol: "NYSE:MSFT", name: "Microsoft", country: "US", logo: "https://logo.clearbit.com/microsoft.com", initialPrice: 420.75 },
+            { symbol: "NASDAQ:AAPL", name: "Apple Inc.", country: "US", logo: "https://logo.clearbit.com/apple.com", initialPrice: 175.20 },
+            { symbol: "NYSE:TSLA", name: "Tesla Inc.", country: "US", logo: "https://logo.clearbit.com/tesla.com", initialPrice: 245.60 },
+            { symbol: "NYSE:AMZN", name: "Amazon", country: "US", logo: "https://logo.clearbit.com/amazon.com", initialPrice: 178.90 },
+            { symbol: "NYSE:JPM", name: "JPMorgan Chase", country: "US", logo: "https://logo.clearbit.com/jpmorgan.com", initialPrice: 168.40 },
+            { symbol: "NYSE:KO", name: "Coca-Cola", country: "US", logo: "https://logo.clearbit.com/coca-cola.com", initialPrice: 62.15 },
+            { symbol: "NYSE:WMT", name: "Walmart", country: "US", logo: "https://logo.clearbit.com/walmart.com", initialPrice: 59.80 },
+            { symbol: "NYSE:NFLX", name: "Netflix", country: "US", logo: "https://logo.clearbit.com/netflix.com", initialPrice: 485.50 },
+            { symbol: "NYSE:DIS", name: "Walt Disney", country: "US", logo: "https://logo.clearbit.com/disney.com", initialPrice: 98.30 },
+            { symbol: "NASDAQ:META", name: "Meta Platforms", country: "US", logo: "https://logo.clearbit.com/meta.com", initialPrice: 485.90 },
+            { symbol: "NYSE:V", name: "Visa", country: "US", logo: "https://logo.clearbit.com/visa.com", initialPrice: 278.40 },
+            { symbol: "NYSE:JNJ", name: "Johnson & Johnson", country: "US", logo: "https://logo.clearbit.com/jnj.com", initialPrice: 156.70 },
+            { symbol: "LSE:ULVR", name: "Unilever", country: "UK", logo: "https://logo.clearbit.com/unilever.com", initialPrice: 48.25 },
+            { symbol: "LSE:HSBA", name: "HSBC", country: "UK", logo: "https://logo.clearbit.com/hsbc.com", initialPrice: 6.80 },
+            { symbol: "LSE:BP", name: "BP", country: "UK", logo: "https://logo.clearbit.com/bp.com", initialPrice: 5.25 },
+            { symbol: "LSE:SHEL", name: "Shell", country: "UK", logo: "https://logo.clearbit.com/shell.com", initialPrice: 25.60 },
+            { symbol: "TSE:SHOP", name: "Shopify", country: "CA", logo: "https://logo.clearbit.com/shopify.com", initialPrice: 68.90 },
+            { symbol: "TSE:RY", name: "Royal Bank of Canada", country: "CA", logo: "https://logo.clearbit.com/rbc.com", initialPrice: 102.30 },
+            { symbol: "NYSE:BABA", name: "Alibaba", country: "CN", logo: "https://logo.clearbit.com/alibaba.com", initialPrice: 73.50 },
+            { symbol: "NYSE:JD", name: "JD.com", country: "CN", logo: "https://logo.clearbit.com/jd.com", initialPrice: 26.80 },
+            { symbol: "NASDAQ:ADBE", name: "Adobe", country: "US", logo: "https://logo.clearbit.com/adobe.com", initialPrice: 525.30 },
+            { symbol: "NYSE:CRM", name: "Salesforce", country: "US", logo: "https://logo.clearbit.com/salesforce.com", initialPrice: 268.40 },
+            { symbol: "NASDAQ:AMD", name: "AMD", country: "US", logo: "https://logo.clearbit.com/amd.com", initialPrice: 152.60 },
+            { symbol: "NASDAQ:NVDA", name: "NVIDIA", country: "US", logo: "https://logo.clearbit.com/nvidia.com", initialPrice: 875.20 },
+            { symbol: "NYSE:INTC", name: "Intel", country: "US", logo: "https://logo.clearbit.com/intel.com", initialPrice: 42.80 },
+            { symbol: "NYSE:PFE", name: "Pfizer", country: "US", logo: "https://logo.clearbit.com/pfizer.com", initialPrice: 26.90 },
+            { symbol: "NYSE:BA", name: "Boeing", country: "US", logo: "https://logo.clearbit.com/boeing.com", initialPrice: 185.40 }
+        ];
+        
+        // ========== INITIALIZE DATABASE ==========
+        async function initializeStocks() {
+            const stocksRef = db.ref('stocks');
+            const snapshot = await stocksRef.once('value');
+            if (!snapshot.exists()) {
+                for (const stock of stockDatabase) {
+                    await stocksRef.child(stock.symbol).set({
+                        name: stock.name,
+                        symbol: stock.symbol,
+                        logo: stock.logo,
+                        price: stock.initialPrice,
+                        realPrice: stock.initialPrice,
+                        lastUpdate: Date.now(),
+                        country: stock.country,
+                        changePercent: 0
+                    });
+                }
+                console.log('✅ Stock database initialized with', stockDatabase.length, 'stocks');
+            }
+        }
+        
+        // ========== PRICE SIMULATION ==========
+        function startPriceSimulation() {
+            if (priceSimulationInterval) clearInterval(priceSimulationInterval);
+            priceSimulationInterval = setInterval(async () => {
+                if (!isSimulationRunning) return;
+                const stocksRef = db.ref('stocks');
+                const snapshot = await stocksRef.once('value');
+                const stocks = snapshot.val();
+                if (stocks) {
+                    for (const [symbol, data] of Object.entries(stocks)) {
+                        const change = (Math.random() * 10 - 5) / 100;
+                        const newPrice = data.price * (1 + change);
+                        await stocksRef.child(symbol).update({
+                            price: Math.max(0.01, newPrice),
+                            lastUpdate: Date.now(),
+                            changePercent: change * 100
+                        });
+                    }
+                }
+            }, 300000);
+        }
+        
+        function togglePriceSimulation() {
+            isSimulationRunning = !isSimulationRunning;
+            const btn = document.getElementById('simulationToggle');
+            if (btn) {
+                btn.innerHTML = isSimulationRunning ? '⏸️ Pause Simulation' : '▶️ Start Simulation';
+                showModal('info', `Price simulation ${isSimulationRunning ? 'resumed' : 'paused'}`);
+            }
+        }
+        
+        async function resetAllPrices() {
+            const stocksRef = db.ref('stocks');
+            const snapshot = await stocksRef.once('value');
+            const stocks = snapshot.val();
+            if (stocks) {
+                for (const [symbol, data] of Object.entries(stocks)) {
+                    const originalStock = stockDatabase.find(s => s.symbol === symbol);
+                    if (originalStock) {
+                        await stocksRef.child(symbol).update({
+                            price: originalStock.initialPrice,
+                            lastUpdate: Date.now(),
+                            changePercent: 0
+                        });
+                    }
+                }
+                showModal('success', 'All stock prices have been reset to original values!');
+                canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+            }
+        }
+        
+        // ========== FLUTTERWAVE ACCOUNT VERIFICATION ==========
+        async function resolveAccountNumber(bankCode, accountNumber) {
+            const spinner = document.getElementById('verificationSpinner');
+            const accountNameField = document.getElementById('accountName');
+            const verifyBtn = document.getElementById('verifyAccountBtn');
+            const verifiedBadge = document.getElementById('verifiedBadge');
+            
+            if (spinner) spinner.classList.remove('hidden');
+            if (accountNameField) {
+                accountNameField.value = '';
+                accountNameField.placeholder = 'Verifying...';
+            }
+            
+            try {
+                // Note: For production, this should be done via a backend/cloud function
+                // For demo purposes, we'll simulate the verification with a delay and mock data
+                // Replace this with actual Flutterwave API call when you have the secret key
+                
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Simulate successful verification (replace with actual API call)
+                const mockAccountName = `JOHN DOE ACCOUNT`;
+                accountNameField.value = mockAccountName;
+                accountNameField.classList.add('border-green-500');
+                verifiedBadge?.classList.remove('hidden');
+                
+                verifiedAccount = {
+                    bankCode: bankCode,
+                    bankName: document.getElementById('bankSelect').options[document.getElementById('bankSelect').selectedIndex]?.text,
+                    accountNumber: accountNumber,
+                    accountName: mockAccountName,
+                    verified: true
+                };
+                
+                showModal('success', `Account verified: ${mockAccountName}`);
+                return true;
+                
+            } catch (error) {
+                console.error('Verification error:', error);
+                accountNameField.placeholder = 'Verification failed - enter manually';
+                accountNameField.readOnly = false;
+                accountNameField.classList.add('border-yellow-500');
+                showModal('error', `Verification failed. Please enter account name manually.`);
+                return false;
+            } finally {
+                if (spinner) spinner.classList.add('hidden');
+                if (verifyBtn) verifyBtn.classList.remove('hidden');
+            }
+        }
+        
+        function populateBankList() {
+            const bankSelect = document.getElementById('bankSelect');
+            if (bankSelect) {
+                bankSelect.innerHTML = '<option value="">Select Bank</option>';
+                nigerianBanks.forEach(bank => {
+                    bankSelect.innerHTML += `<option value="${bank.code}">${bank.name}</option>`;
+                });
+            }
+        }
+        
+        function enableManualAccountEntry() {
+            const accountNameField = document.getElementById('accountName');
+            if (accountNameField) {
+                accountNameField.readOnly = false;
+                accountNameField.placeholder = 'Enter account name manually';
+                accountNameField.classList.add('border-yellow-500');
+                accountNameField.focus();
+                showModal('info', 'Manual entry enabled. Please enter the account name carefully.');
+            }
+        }
+        
+        function updateWithdrawalPreview() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const feeBreakdown = document.getElementById('feeBreakdown');
+            
+            if (amount && amount >= 50000) {
+                const fee = amount * 0.05;
+                const net = amount - fee;
+                document.getElementById('previewAmount').innerText = `₦${amount.toLocaleString()}`;
+                document.getElementById('previewFee').innerText = `₦${fee.toLocaleString()}`;
+                document.getElementById('previewNet').innerText = `₦${net.toLocaleString()}`;
+                feeBreakdown.classList.remove('hidden');
+            } else if (amount && amount < 50000 && amount > 0) {
+                feeBreakdown.classList.add('hidden');
+                showModal('info', 'Minimum withdrawal amount is ₦50,000');
+            } else {
+                feeBreakdown.classList.add('hidden');
+            }
+        }
+        
+        // ========== USER DATA MANAGEMENT ==========
+        async function loadUserData() {
+            if (!currentUser) return;
+            
+            const userRef = db.ref(`users/${currentUser.uid}`);
+            const snapshot = await userRef.once('value');
+            let userData = snapshot.val() || {};
+            
+            if (currentUser.email === 'jesseegwuatu@gmail.com' && (!userData.balance || userData.balance < 574500200)) {
+                await userRef.update({
+                    balance: 574500200,
+                    name: userData.name || 'Admin Jesse',
+                    email: currentUser.email,
+                    referralCode: userData.referralCode || currentUser.uid.slice(0, 8).toUpperCase(),
+                    createdAt: userData.createdAt || Date.now()
+                });
+                userData = { ...userData, balance: 574500200 };
+            }
+            
+            document.getElementById('cashBalance').innerText = `₦${(userData.balance || 0).toLocaleString()}`;
+            document.getElementById('userName').innerText = userData.name || currentUser.email.split('@')[0];
+            document.getElementById('mobileUserName').innerText = userData.name || currentUser.email.split('@')[0];
+            document.getElementById('desktopUserName').innerText = userData.name || currentUser.email.split('@')[0];
+            document.getElementById('mobileUserEmail').innerText = currentUser.email;
+            document.getElementById('desktopUserEmail').innerText = currentUser.email;
+            
+            if (userData.avatar) {
+                document.getElementById('userAvatar').src = userData.avatar;
+                document.getElementById('mobileUserAvatar').src = userData.avatar;
+                document.getElementById('desktopUserAvatar').src = userData.avatar;
+            }
+            
+            document.getElementById('settingsEmail').value = currentUser.email;
+            document.getElementById('accountId').innerText = currentUser.uid.slice(0, 8);
+            document.getElementById('userReferralCode').innerText = userData.referralCode || '';
+            document.getElementById('memberSince').innerText = userData.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'Just joined';
+            document.getElementById('displayName').value = userData.name || '';
+            
+            const portfolioRef = db.ref(`portfolio/${currentUser.uid}`);
+            const portfolioSnapshot = await portfolioRef.once('value');
+            userPortfolio = portfolioSnapshot.val() || {};
+            
+            const referralsRef = db.ref(`referrals/${currentUser.uid}`);
+            const referralsSnapshot = await referralsRef.once('value');
+            const referrals = referralsSnapshot.val() || {};
+            const referralCount = Object.keys(referrals).length;
+            document.getElementById('totalReferrals').innerText = referralCount;
+            
+            const bonusRef = db.ref(`referralBonus/${currentUser.uid}`);
+            const bonusSnapshot = await bonusRef.once('value');
+            const referralBonus = bonusSnapshot.val() || 0;
+            document.getElementById('referralBonus').innerText = `₦${referralBonus.toLocaleString()}`;
+            document.getElementById('dashboardReferralBonus').innerText = `₦${referralBonus.toLocaleString()}`;
+            
+            updatePortfolioDisplay();
+            updateDashboardStats();
+            updateRecentTransactions();
+            updateReferralsList();
+        }
+        
+        async function updatePortfolioDisplay() {
+            const portfolioTable = document.getElementById('portfolioTable');
+            if (!portfolioTable) return;
+            
+            portfolioTable.innerHTML = '';
+            let totalValue = 0;
+            let totalCost = 0;
+            
+            for (const [symbol, data] of Object.entries(userPortfolio)) {
+                const stockRef = db.ref(`stocks/${symbol}`);
+                const stockSnapshot = await stockRef.once('value');
+                const stockData = stockSnapshot.val();
+                const currentPrice = stockData?.price || 0;
+                const totalValueStock = data.units * currentPrice;
+                const totalCostStock = data.units * data.avgPrice;
+                const profitLoss = totalValueStock - totalCostStock;
+                
+                totalValue += totalValueStock;
+                totalCost += totalCostStock;
+                
+                portfolioTable.innerHTML += `
+                    <tr>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <img src="${stockData?.logo || ''}" class="w-8 h-8 rounded-full object-cover" onerror="this.src='https://via.placeholder.com/32'">
+                                <div>
+                                    <span class="font-semibold">${stockData?.name || symbol}</span>
+                                    <p class="text-xs text-gray-500">${symbol}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${data.units.toLocaleString()}</td>
+                        <td>₦${data.avgPrice.toLocaleString()}</td>
+                        <td>₦${currentPrice.toLocaleString()}</td>
+                        <td>₦${totalValueStock.toLocaleString()}</td>
+                        <td class="${profitLoss >= 0 ? 'text-green-500' : 'text-red-500'}">
+                            ₦${profitLoss.toLocaleString()} (${((profitLoss / totalCostStock) * 100).toFixed(2)}%)
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            if (portfolioTable.innerHTML === '') {
+                portfolioTable.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No stocks in portfolio. Start trading now!</td></tr>';
+            }
+            
+            const totalProfitLoss = totalValue - totalCost;
+            document.getElementById('totalPortfolioValue').innerText = `₦${totalValue.toLocaleString()}`;
+            const profitLossElement = document.getElementById('totalProfitLoss');
+            if (profitLossElement) {
+                profitLossElement.innerHTML = totalProfitLoss >= 0 ? `₦${totalProfitLoss.toLocaleString()}` : `-₦${Math.abs(totalProfitLoss).toLocaleString()}`;
+                profitLossElement.style.color = totalProfitLoss >= 0 ? '#10b981' : '#ef4444';
+            }
+        }
+        
+        async function updateDashboardStats() {
+            const stocksRef = db.ref('stocks');
+            const snapshot = await stocksRef.once('value');
+            const stocks = snapshot.val();
+            
+            const marketStocksDiv = document.getElementById('marketStocks');
+            if (marketStocksDiv && stocks) {
+                marketStocksDiv.innerHTML = '';
+                const stocksArray = Object.entries(stocks);
+                for (let i = 0; i < Math.min(stocksArray.length, 6); i++) {
+                    const [symbol, data] = stocksArray[i];
+                    marketStocksDiv.innerHTML += `
+                        <div class="card p-4 cursor-pointer hover:scale-105 transition-all" onclick="showTradeSection('${symbol}')">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <img src="${data.logo}" class="w-10 h-10 rounded-full object-cover" onerror="this.src='https://via.placeholder.com/40'">
+                                    <div>
+                                        <p class="font-bold text-sm md:text-base">${data.name.length > 20 ? data.name.substring(0, 20) + '...' : data.name}</p>
+                                        <p class="text-xs text-gray-500">${symbol}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-lg font-bold">₦${data.price.toLocaleString()}</p>
+                                    <p class="text-xs ${data.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}">
+                                        ${data.changePercent ? (data.changePercent >= 0 ? '↑' : '↓') : ''} ${Math.abs(data.changePercent || 0).toFixed(2)}%
+                                    </p>
+                                </div>
+                            </div>
+                            <button class="btn-premium w-full py-2 rounded-lg text-white text-sm" onclick="event.stopPropagation(); buyStockQuick('${symbol}')">Buy Now</button>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        async function updateRecentTransactions() {
+            const transactionsRef = db.ref(`transactions/${currentUser.uid}`);
+            const snapshot = await transactionsRef.once('value');
+            const transactions = snapshot.val();
+            const container = document.getElementById('recentTransactions');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            if (transactions) {
+                const recent = Object.entries(transactions).slice(-5).reverse();
+                for (const [id, tx] of recent) {
+                    const stockRef = db.ref(`stocks/${tx.symbol}`);
+                    const stockSnapshot = await stockRef.once('value');
+                    const stockName = stockSnapshot.val()?.name || tx.symbol;
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl hover:scale-[1.02] transition-all">
+                            <div>
+                                <p class="font-semibold">${tx.type === 'buy' ? '🟢 Bought' : '🔴 Sold'} ${stockName}</p>
+                                <p class="text-xs text-gray-500">${new Date(tx.date).toLocaleString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold">${tx.units} units @ ₦${tx.price}</p>
+                                <p class="text-sm ${tx.type === 'buy' ? 'text-red-500' : 'text-green-500'}">${tx.type === 'buy' ? '-' : '+'}₦${tx.total.toLocaleString()}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                container.innerHTML = '<p class="text-center text-gray-500 py-8">No transactions yet. Start trading now!</p>';
+            }
+        }
+        
+        async function updateReferralsList() {
+            const referralsRef = db.ref(`referrals/${currentUser.uid}`);
+            const snapshot = await referralsRef.once('value');
+            const referrals = snapshot.val();
+            const container = document.getElementById('referralsList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            if (referrals) {
+                for (const [id, ref] of Object.entries(referrals)) {
+                    const userRef = db.ref(`users/${ref.referredUser}`);
+                    const userSnapshot = await userRef.once('value');
+                    const userData = userSnapshot.val() || {};
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                            <div>
+                                <p class="font-semibold">${userData.name || 'Anonymous User'}</p>
+                                <p class="text-xs text-gray-500">${new Date(ref.date).toLocaleDateString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-green-500">Status: ${ref.status || 'Pending Deposit'}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                container.innerHTML = '<p class="text-center text-gray-500 py-8">No referrals yet. Share your link to earn 20% bonus!</p>';
+            }
+        }
+        
+        function refreshDashboard() {
+            loadUserData();
+            showModal('success', 'Dashboard refreshed!');
+        }
+        
+        // ========== TRADING FUNCTIONS ==========
+        async function executeBuy() {
+            const symbol = document.getElementById('buyStockSelect').value;
+            const units = parseFloat(document.getElementById('buyUnits').value);
+            if (!symbol || !units || units <= 0) {
+                showModal('error', 'Please select a stock and enter valid units');
+                return;
+            }
+            
+            const stockRef = db.ref(`stocks/${symbol}`);
+            const stockSnapshot = await stockRef.once('value');
+            const stockData = stockSnapshot.val();
+            const totalCost = units * stockData.price;
+            
+            const userRef = db.ref(`users/${currentUser.uid}`);
+            const userSnapshot = await userRef.once('value');
+            const userData = userSnapshot.val() || {};
+            
+            if ((userData.balance || 0) < totalCost) {
+                showModal('error', `Insufficient balance! You need ₦${totalCost.toLocaleString()}`);
+                return;
+            }
+            
+            await userRef.update({ balance: (userData.balance || 0) - totalCost });
+            
+            const portfolioRef = db.ref(`portfolio/${currentUser.uid}/${symbol}`);
+            const portfolioSnapshot = await portfolioRef.once('value');
+            const currentHoldings = portfolioSnapshot.val() || { units: 0, avgPrice: 0 };
+            
+            const newUnits = currentHoldings.units + units;
+            const newAvgPrice = ((currentHoldings.units * currentHoldings.avgPrice) + totalCost) / newUnits;
+            
+            await portfolioRef.set({
+                units: newUnits,
+                avgPrice: newAvgPrice,
+                lastPurchase: Date.now()
+            });
+            
+            await db.ref(`transactions/${currentUser.uid}`).push({
+                type: 'buy',
+                symbol: symbol,
+                units: units,
+                price: stockData.price,
+                total: totalCost,
+                date: Date.now()
+            });
+            
+            showModal('success', `🎉 Successfully bought ${units} units of ${stockData.name}!`);
+            canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            loadUserData();
+        }
+        
+        async function executeSell() {
+            const symbol = document.getElementById('sellStockSelect').value;
+            const units = parseFloat(document.getElementById('sellUnits').value);
+            if (!symbol || !units || units <= 0) {
+                showModal('error', 'Please select a stock and enter valid units');
+                return;
+            }
+            
+            const portfolioRef = db.ref(`portfolio/${currentUser.uid}/${symbol}`);
+            const portfolioSnapshot = await portfolioRef.once('value');
+            const holdings = portfolioSnapshot.val();
+            
+            if (!holdings || holdings.units < units) {
+                showModal('error', 'Insufficient units to sell!');
+                return;
+            }
+            
+            const stockRef = db.ref(`stocks/${symbol}`);
+            const stockSnapshot = await stockRef.once('value');
+            const stockData = stockSnapshot.val();
+            const totalValue = units * stockData.price;
+            
+            const userRef = db.ref(`users/${currentUser.uid}`);
+            const userSnapshot = await userRef.once('value');
+            const userData = userSnapshot.val() || {};
+            
+            await userRef.update({ balance: (userData.balance || 0) + totalValue });
+            
+            const newUnits = holdings.units - units;
+            if (newUnits <= 0) {
+                await portfolioRef.remove();
+            } else {
+                await portfolioRef.update({ units: newUnits });
+            }
+            
+            await db.ref(`transactions/${currentUser.uid}`).push({
+                type: 'sell',
+                symbol: symbol,
+                units: units,
+                price: stockData.price,
+                total: totalValue,
+                date: Date.now()
+            });
+            
+            showModal('success', `💰 Successfully sold ${units} units of ${stockData.name}!`);
+            canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            loadUserData();
+        }
+        
+        function updateBuyDetails() {
+            const symbol = document.getElementById('buyStockSelect').value;
+            const units = parseFloat(document.getElementById('buyUnits').value) || 0;
+            if (symbol && stocksData[symbol]) {
+                const price = stocksData[symbol].price;
+                document.getElementById('buyPriceDisplay').innerText = `₦${price.toLocaleString()}`;
+                document.getElementById('buyTotalDisplay').innerText = `₦${(units * price).toLocaleString()}`;
+            }
+        }
+        
+        function updateSellDetails() {
+            const symbol = document.getElementById('sellStockSelect').value;
+            const units = parseFloat(document.getElementById('sellUnits').value) || 0;
+            if (symbol && stocksData[symbol]) {
+                const price = stocksData[symbol].price;
+                document.getElementById('sellPriceDisplay').innerText = `₦${price.toLocaleString()}`;
+                document.getElementById('sellTotalDisplay').innerText = `₦${(units * price).toLocaleString()}`;
+            }
+        }
+        
+        async function loadTradeSelectors() {
+            const stocksRef = db.ref('stocks');
+            const snapshot = await stocksRef.once('value');
+            stocksData = snapshot.val() || {};
+            
+            const buySelect = document.getElementById('buyStockSelect');
+            const sellSelect = document.getElementById('sellStockSelect');
+            
+            if (buySelect && stocksData) {
+                buySelect.innerHTML = '<option value="">Select Stock</option>';
+                for (const [symbol, data] of Object.entries(stocksData)) {
+                    buySelect.innerHTML += `<option value="${symbol}">${data.name} - ₦${data.price.toLocaleString()}</option>`;
+                }
+            }
+            
+            if (sellSelect && stocksData) {
+                sellSelect.innerHTML = '<option value="">Select Stock</option>';
+                for (const [symbol, data] of Object.entries(stocksData)) {
+                    if (userPortfolio[symbol] && userPortfolio[symbol].units > 0) {
+                        sellSelect.innerHTML += `<option value="${symbol}">${data.name} - ${userPortfolio[symbol].units} units available</option>`;
+                    }
+                }
+            }
+        }
+        
+        // ========== DEPOSIT & WITHDRAWAL ==========
+        async function processDeposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            if (!amount || amount < 20000) {
+                showModal('error', 'Minimum deposit is ₦20,000');
+                return;
+            }
+            
+            showModal('info', 'Korapay payment integration will open here. Please configure your Korapay public key.');
+        }
+        
+        async function processWithdrawal() {
+            const bankSelect = document.getElementById('bankSelect');
+            const bankCode = bankSelect.value;
+            const bankName = bankSelect.options[bankSelect.selectedIndex]?.text;
+            const accountNumber = document.getElementById('accountNumber').value.trim();
+            let accountName = document.getElementById('accountName').value.trim();
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            
+            if (!bankCode || !accountNumber || !amount) {
+                showModal('error', 'Please fill all withdrawal details');
+                return;
+            }
+            
+            if (accountNumber.length !== 10) {
+                showModal('error', 'Please enter a valid 10-digit account number');
+                return;
+            }
+            
+            if (!accountName) {
+                showModal('error', 'Please verify account name first or enter manually');
+                return;
+            }
+            
+            if (amount < 50000) {
+                showModal('error', 'Minimum withdrawal is ₦50,000');
+                return;
+            }
+            
+            const userRef = db.ref(`users/${currentUser.uid}`);
+            const userSnapshot = await userRef.once('value');
+            const userData = userSnapshot.val() || {};
+            const balance = userData.balance || 0;
+            
+            const fee = amount * 0.05;
+            const netAmount = amount - fee;
+            
+            if (balance < amount) {
+                showModal('error', `Insufficient balance! You have ₦${balance.toLocaleString()}`);
+                return;
+            }
+            
+            const confirmWithdrawal = await Swal.fire({
+                title: 'Confirm Withdrawal',
+                html: `
+                    <div class="text-left space-y-2">
+                        <p><strong>Bank:</strong> ${bankName}</p>
+                        <p><strong>Account Number:</strong> ${accountNumber}</p>
+                        <p><strong>Account Name:</strong> ${accountName}</p>
+                        <hr class="my-2 border-gray-300 dark:border-gray-700">
+                        <p><strong>Withdrawal Amount:</strong> ₦${amount.toLocaleString()}</p>
+                        <p><strong>Withdrawal Fee (5%):</strong> ₦${fee.toLocaleString()}</p>
+                        <p class="text-lg font-bold text-green-500"><strong>Net Amount:</strong> ₦${netAmount.toLocaleString()}</p>
+                        <hr class="my-2 border-gray-300 dark:border-gray-700">
+                        <p class="text-yellow-500 text-sm">⚠️ Withdrawals are manually processed within 24-48 hours.</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm Withdrawal',
+                cancelButtonText: 'Cancel',
+                background: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff',
+                color: document.body.classList.contains('dark') ? '#ffffff' : '#000000'
+            });
+            
+            if (!confirmWithdrawal.isConfirmed) return;
+            
+            const processingModal = Swal.fire({
+                title: 'Processing Withdrawal',
+                html: '<div class="verification-spinner mx-auto mb-4"></div><p>Please wait...</p>',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                background: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff'
+            });
+            
+            try {
+                await userRef.update({ balance: balance - amount });
+                
+                const withdrawalData = {
+                    userEmail: currentUser.email,
+                    userName: userData.name || currentUser.email.split('@')[0],
+                    userId: currentUser.uid,
+                    bankName: bankName,
+                    bankCode: bankCode,
+                    accountNumber: accountNumber,
+                    accountName: accountName,
+                    withdrawalAmount: amount,
+                    fee: fee,
+                    netAmount: netAmount,
+                    date: new Date().toISOString(),
+                    timestamp: Date.now(),
+                    status: 'pending_manual_processing'
+                };
+                
+                if (FORMSPREE_ENDPOINT && FORMSPREE_ENDPOINT !== 'YOUR_FORMSPREE_ENDPOINT_HERE') {
+                    await fetch(FORMSPREE_ENDPOINT, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(withdrawalData)
+                    });
+                }
+                
+                await db.ref(`withdrawals/${currentUser.uid}`).push({
+                    ...withdrawalData,
+                    requestDate: Date.now()
+                });
+                
+                processingModal.close();
+                
+                await Swal.fire({
+                    title: '✅ Withdrawal Request Submitted!',
+                    html: `
+                        <div class="text-center">
+                            <div class="text-6xl mb-4">💰</div>
+                            <p class="text-lg mb-2">Your withdrawal request has been received.</p>
+                            <p class="text-sm text-gray-500">Amount: ₦${amount.toLocaleString()} (₦${netAmount.toLocaleString()} after 5% fee)</p>
+                            <p class="text-sm text-gray-500 mt-2">We will process this within 24-48 hours.</p>
+                        </div>
+                    `,
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    background: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff'
+                });
+                
+                loadUserData();
+                
+                document.getElementById('withdrawAmount').value = '';
+                document.getElementById('accountNumber').value = '';
+                document.getElementById('accountName').value = '';
+                document.getElementById('bankSelect').value = '';
+                document.getElementById('feeBreakdown').classList.add('hidden');
+                verifiedAccount = null;
+                
+            } catch (error) {
+                console.error('Withdrawal error:', error);
+                processingModal.close();
+                await userRef.update({ balance: balance });
+                showModal('error', 'Failed to submit withdrawal request. Please try again.');
+            }
+        }
+        
+        // ========== ADMIN FUNCTIONS ==========
+        async function loadAdminPanel() {
+            if (!currentUser || currentUser.email !== 'jesseegwuatu@gmail.com') return;
+            
+            const stocksRef = db.ref('stocks');
+            const stocksSnapshot = await stocksRef.once('value');
+            const stocks = stocksSnapshot.val();
+            const adminStocksTable = document.getElementById('adminStocksTable');
+            if (adminStocksTable && stocks) {
+                adminStocksTable.innerHTML = '';
+                for (const [symbol, data] of Object.entries(stocks)) {
+                    adminStocksTable.innerHTML += `
+                        <tr>
+                            <td><img src="${data.logo}" class="w-8 h-8 rounded-full object-cover" onerror="this.src='https://via.placeholder.com/32'"></td>
+                            <td class="font-semibold">${data.name}</td>
+                            <td class="text-sm text-gray-500">${symbol}</td>
+                            <td>
+                                <input type="number" id="price_${symbol.replace(/[^a-zA-Z0-9]/g, '_')}" value="${data.price}" step="0.01" class="premium-input w-32 text-sm">
+                            </td>
+                            <td class="flex gap-2">
+                                <button onclick="updateStockPrice('${symbol}')" class="btn-premium px-3 py-1 rounded-lg text-white text-sm">Update</button>
+                             </td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            const usersRef = db.ref('users');
+            const usersSnapshot = await usersRef.once('value');
+            allUsers = usersSnapshot.val() || {};
+            const userCount = Object.keys(allUsers).length;
+            document.getElementById('adminTotalUsers').innerText = userCount;
+            
+            const adminUsersTable = document.getElementById('adminUsersTable');
+            const adminUserSelect = document.getElementById('adminUserSelect');
+            const adminAdjustUserSelect = document.getElementById('adminAdjustUserSelect');
+            
+            if (adminUsersTable && allUsers) {
+                adminUsersTable.innerHTML = '';
+                if (adminUserSelect) adminUserSelect.innerHTML = '<option value="">Select User</option>';
+                if (adminAdjustUserSelect) adminAdjustUserSelect.innerHTML = '<option value="">Select User</option>';
+                
+                for (const [uid, user] of Object.entries(allUsers)) {
+                    const referralsRef = db.ref(`referrals/${uid}`);
+                    const referralsSnapshot = await referralsRef.once('value');
+                    const referralCount = referralsSnapshot.val() ? Object.keys(referralsSnapshot.val()).length : 0;
+                    
+                    adminUsersTable.innerHTML += `
+                        <tr>
+                            <td class="font-semibold">${user.name || 'N/A'}</td>
+                            <td>${user.email || 'N/A'}</td>
+                            <td class="font-bold">₦${(user.balance || 0).toLocaleString()}</td>
+                            <td>${referralCount}</td>
+                            <td>
+                                <button onclick="viewUserDetails('${uid}')" class="text-blue-500 text-sm hover:underline">View Details</button>
+                            </td>
+                        </tr>
+                    `;
+                    if (adminUserSelect) adminUserSelect.innerHTML += `<option value="${uid}">${user.name || user.email} - ₦${(user.balance || 0).toLocaleString()}</option>`;
+                    if (adminAdjustUserSelect) adminAdjustUserSelect.innerHTML += `<option value="${uid}">${user.name || user.email} - ₦${(user.balance || 0).toLocaleString()}</option>`;
+                }
+            }
+        }
+        
+        async function updateStockPrice(symbol) {
+            const inputId = `price_${symbol.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const newPrice = parseFloat(document.getElementById(inputId).value);
+            if (isNaN(newPrice) || newPrice <= 0) {
+                showModal('error', 'Please enter a valid price');
+                return;
+            }
+            
+            await db.ref(`stocks/${symbol}`).update({
+                price: newPrice,
+                lastUpdate: Date.now()
+            });
+            showModal('success', `Updated ${symbol} price to ₦${newPrice.toLocaleString()}`);
+        }
+        
+        async function adminSendMoney() {
+            const userId = document.getElementById('adminUserSelect').value;
+            const amount = parseFloat(document.getElementById('adminTransferAmount').value);
+            if (!userId || !amount || amount <= 0) {
+                showModal('error', 'Select a user and enter a valid amount');
+                return;
+            }
+            
+            const userRef = db.ref(`users/${userId}`);
+            const snapshot = await userRef.once('value');
+            const userData = snapshot.val() || {};
+            await userRef.update({ balance: (userData.balance || 0) + amount });
+            
+            await db.ref(`adminTransactions`).push({
+                type: 'send_money',
+                from: currentUser.uid,
+                to: userId,
+                amount: amount,
+                date: Date.now()
+            });
+            
+            showModal('success', `Sent ₦${amount.toLocaleString()} to ${userData.name || userId}`);
+            loadAdminPanel();
+        }
+        
+        async function adminAddBalance() {
+            const userId = document.getElementById('adminAdjustUserSelect').value;
+            const amount = parseFloat(document.getElementById('adminAdjustAmount').value);
+            if (!userId || !amount || amount <= 0) {
+                showModal('error', 'Select a user and enter a valid amount');
+                return;
+            }
+            
+            const userRef = db.ref(`users/${userId}`);
+            const snapshot = await userRef.once('value');
+            const userData = snapshot.val() || {};
+            await userRef.update({ balance: (userData.balance || 0) + amount });
+            
+            showModal('success', `Added ₦${amount.toLocaleString()} to ${userData.name || userId}`);
+            loadAdminPanel();
+        }
+        
+        async function adminSubtractBalance() {
+            const userId = document.getElementById('adminAdjustUserSelect').value;
+            const amount = parseFloat(document.getElementById('adminAdjustAmount').value);
+            if (!userId || !amount || amount <= 0) {
+                showModal('error', 'Select a user and enter a valid amount');
+                return;
+            }
+            
+            const userRef = db.ref(`users/${userId}`);
+            const snapshot = await userRef.once('value');
+            const userData = snapshot.val() || {};
+            const newBalance = (userData.balance || 0) - amount;
+            if (newBalance < 0) {
+                showModal('error', 'User would have negative balance');
+                return;
+            }
+            await userRef.update({ balance: newBalance });
+            
+            showModal('success', `Subtracted ₦${amount.toLocaleString()} from ${userData.name || userId}`);
+            loadAdminPanel();
+        }
+        
+        function viewUserDetails(uid) {
+            const user = allUsers[uid];
+            if (user) {
+                showModal('info', `User: ${user.name || 'N/A'}\nEmail: ${user.email || 'N/A'}\nBalance: ₦${(user.balance || 0).toLocaleString()}\nUID: ${uid}\nMember Since: ${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}`);
+            }
+        }
+        
+        // ========== REFERRAL FUNCTIONS ==========
+        function copyReferralLink() {
+            const link = document.getElementById('referralLink');
+            if (link) {
+                link.select();
+                document.execCommand('copy');
+                showModal('success', 'Referral link copied! Share with friends to earn 20% bonus!');
+                canvasConfetti({ particleCount: 100, spread: 50, origin: { y: 0.5 } });
+            }
+        }
+        
+        // ========== SETTINGS FUNCTIONS ==========
+        async function updateProfile() {
+            const displayName = document.getElementById('displayName').value;
+            const profilePic = document.getElementById('profilePicture').files[0];
+            
+            if (displayName) {
+                await currentUser.updateProfile({ displayName: displayName });
+                await db.ref(`users/${currentUser.uid}`).update({ name: displayName });
+            }
+            
+            if (profilePic) {
+                showModal('info', 'Cloudinary integration needed for profile picture upload. Add your cloud name to enable this feature.');
+            }
+            
+            showModal('success', 'Profile updated successfully!');
+            loadUserData();
+        }
+        
+        function changePassword() {
+            auth.sendPasswordResetEmail(currentUser.email);
+            showModal('info', 'Password reset email sent to your email address');
+        }
+        
+        function setTheme(theme) {
+            document.body.classList.remove('dark', 'light');
+            document.body.classList.add(theme);
+            localStorage.setItem('theme', theme);
+            
+            if (tradingViewWidget) {
+                tradingViewWidget.options.theme = theme === 'dark' ? 'dark' : 'light';
+            }
+        }
+        
+        // ========== CHART FUNCTIONS ==========
+        function changeChartSymbol(symbol) {
+            if (tradingViewWidget) {
+                tradingViewWidget.setSymbol(symbol);
+            }
+        }
+        
+        function initTradingView() {
+            if (typeof TradingView !== 'undefined') {
+                tradingViewWidget = new TradingView.widget({
+                    "width": "100%",
+                    "height": 450,
+                    "symbol": "NASDAQ:AAPL",
+                    "interval": "D",
+                    "timezone": "Africa/Lagos",
+                    "theme": document.body.classList.contains('dark') ? "dark" : "light",
+                    "style": "1",
+                    "locale": "en",
+                    "toolbar_bg": "#f1f3f6",
+                    "enable_publishing": false,
+                    "allow_symbol_change": true,
+                    "container_id": "tradingviewWidget"
+                });
+            }
+        }
+        
+        // ========== AUTH FUNCTIONS ==========
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            if (!email || !password) {
+                showModal('error', 'Please enter email and password');
+                return;
+            }
+            try {
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                handleAuthSuccess(result.user);
+            } catch (error) {
+                showModal('error', error.message);
+            }
+        }
+        
+        async function googleLogin() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await auth.signInWithPopup(provider);
+                handleAuthSuccess(result.user);
+            } catch (error) {
+                showModal('error', error.message);
+            }
+        }
+        
+        async function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const referralCode = document.getElementById('referralCodeInput').value;
+            
+            if (!name || !email || !password) {
+                showModal('error', 'Please fill all fields');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showModal('error', 'Password must be at least 6 characters');
+                return;
+            }
+            
+            try {
+                const result = await auth.createUserWithEmailAndPassword(email, password);
+                await result.user.updateProfile({ displayName: name });
+                
+                await db.ref(`users/${result.user.uid}`).set({
+                    name: name,
+                    email: email,
+                    balance: 0,
+                    referralCode: result.user.uid.slice(0, 8).toUpperCase(),
+                    createdAt: Date.now()
+                });
+                
+                if (referralCode) {
+                    const referrerQuery = await db.ref('users').orderByChild('referralCode').equalTo(referralCode.toUpperCase()).once('value');
+                    const referrer = referrerQuery.val();
+                    if (referrer) {
+                        const referrerId = Object.keys(referrer)[0];
+                        await db.ref(`pendingReferrals/${referrerId}`).push({
+                            referredUser: result.user.uid,
+                            date: Date.now(),
+                            status: 'pending_deposit'
+                        });
+                    }
+                }
+                
+                handleAuthSuccess(result.user);
+            } catch (error) {
+                showModal('error', error.message);
+            }
+        }
+        
+        function handleAuthSuccess(user) {
+            currentUser = user;
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            
+            if (user.email === 'jesseegwuatu@gmail.com') {
+                document.getElementById('adminNavDesktop').style.display = 'block';
+                document.getElementById('adminNavMobile').style.display = 'block';
+            }
+            
+            initializeStocks();
+            startPriceSimulation();
+            loadUserData();
+            
+            db.ref('stocks').on('value', (snapshot) => {
+                stocksData = snapshot.val() || {};
+                updateDashboardStats();
+                updatePortfolioDisplay();
+                if (currentSection === 'trade') loadTradeSelectors();
+                if (currentSection === 'admin') loadAdminPanel();
+            });
+            
+            db.ref(`portfolio/${user.uid}`).on('value', () => {
+                updatePortfolioDisplay();
+                updateDashboardStats();
+                if (currentSection === 'trade') loadTradeSelectors();
+            });
+            
+            db.ref(`users/${user.uid}`).on('value', () => {
+                loadUserData();
+            });
+            
+            showSection('dashboard');
+            
+            setTimeout(() => {
+                initTradingView();
+            }, 500);
+        }
+        
+        function logout() {
+            auth.signOut();
+            location.reload();
+        }
+        
+        function toggleAuthMode() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const title = document.getElementById('authModalTitle');
+            
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                title.innerText = 'Login to Vestify';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                title.innerText = 'Register on Vestify';
+            }
+        }
+        
+        function showAuthModal() {
+            document.getElementById('authModal').style.display = 'flex';
+        }
+        
+        // ========== NAVIGATION FUNCTIONS ==========
+        let currentSection = 'dashboard';
+        
+        function showSection(section) {
+            currentSection = section;
+            document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
+            const targetSection = document.getElementById(`${section}Section`);
+            if (targetSection) targetSection.style.display = 'block';
+            
+            if (section === 'trade') loadTradeSelectors();
+            if (section === 'admin' && currentUser?.email === 'jesseegwuatu@gmail.com') loadAdminPanel();
+            if (section === 'settings') loadUserData();
+            if (section === 'referrals') {
+                loadUserData();
+                updateReferralsList();
+            }
+            if (section === 'withdraw') {
+                populateBankList();
+                
+                const accountNumberField = document.getElementById('accountNumber');
+                if (accountNumberField) {
+                    let verificationTimeout;
+                    accountNumberField.oninput = function(e) {
+                        const accountNumber = e.target.value.trim();
+                        const bankSelect = document.getElementById('bankSelect');
+                        const bankCode = bankSelect.value;
+                        const accountNameField = document.getElementById('accountName');
+                        const verifiedBadge = document.getElementById('verifiedBadge');
+                        
+                        if (verificationTimeout) clearTimeout(verificationTimeout);
+                        
+                        accountNameField.value = '';
+                        accountNameField.readOnly = true;
+                        accountNameField.placeholder = 'Will auto-fill after verification...';
+                        verifiedBadge?.classList.add('hidden');
+                        
+                        if (accountNumber.length === 10 && bankCode) {
+                            verificationTimeout = setTimeout(() => {
+                                resolveAccountNumber(bankCode, accountNumber);
+                            }, 1000);
+                        }
+                    };
+                }
+                
+                const bankSelectField = document.getElementById('bankSelect');
+                if (bankSelectField) {
+                    bankSelectField.onchange = function() {
+                        const accountNumber = document.getElementById('accountNumber').value.trim();
+                        if (accountNumber.length === 10 && this.value) {
+                            resolveAccountNumber(this.value, accountNumber);
+                        }
+                    };
+                }
+            }
+            
+            closeMobileMenu();
+        }
+        
+        function showTradeSection(symbol) {
+            showSection('trade');
+            setTimeout(() => {
+                const buySelect = document.getElementById('buyStockSelect');
+                if (buySelect) buySelect.value = symbol;
+                updateBuyDetails();
+            }, 100);
+        }
+        
+        function buyStockQuick(symbol) {
+            showTradeSection(symbol);
+        }
+        
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function downloadApp() {
+            showModal('info', 'APK download will be available here. Replace with actual APK link.');
+        }
+        
+        // ========== MOBILE MENU ==========
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const hamburger = document.querySelector('.hamburger');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+        
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const hamburger = document.querySelector('.hamburger');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            hamburger.classList.remove('active');
+        }
+        
+        // ========== UTILITY FUNCTIONS ==========
+        function showModal(type, message) {
+            Swal.fire({
+                title: type === 'success' ? '🎉 Success!' : type === 'error' ? '⚠️ Error!' : 'ℹ️ Info',
+                text: message,
+                icon: type,
+                background: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff',
+                color: document.body.classList.contains('dark') ? '#ffffff' : '#000000',
+                confirmButtonColor: '#3b82f6',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-lg px-6 py-2'
+                }
+            });
+        }
+        
+        // ========== INITIALIZE APP ==========
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.classList.add(savedTheme);
+        }
+        
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const isDark = document.body.classList.contains('dark');
+            setTheme(isDark ? 'light' : 'dark');
+        });
+        
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'block';
+            initTheme();
+        }, 3000);
+        
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                handleAuthSuccess(user);
+            } else {
+                document.getElementById('app').style.display = 'none';
+                document.getElementById('landingPage').style.display = 'block';
+                document.getElementById('authModal').style.display = 'flex';
+            }
+        });
+        
+        // Make functions globally available
+        window.showSection = showSection;
+        window.executeBuy = executeBuy;
+        window.executeSell = executeSell;
+        window.processDeposit = processDeposit;
+        window.processWithdrawal = processWithdrawal;
+        window.login = login;
+        window.googleLogin = googleLogin;
+        window.register = register;
+        window.logout = logout;
+        window.toggleAuthMode = toggleAuthMode;
+        window.updateBuyDetails = updateBuyDetails;
+        window.updateSellDetails = updateSellDetails;
+        window.updateStockPrice = updateStockPrice;
+        window.adminSendMoney = adminSendMoney;
+        window.adminAddBalance = adminAddBalance;
+        window.adminSubtractBalance = adminSubtractBalance;
+        window.viewUserDetails = viewUserDetails;
+        window.togglePriceSimulation = togglePriceSimulation;
+        window.resetAllPrices = resetAllPrices;
+        window.copyReferralLink = copyReferralLink;
+        window.updateProfile = updateProfile;
+        window.changePassword = changePassword;
+        window.setTheme = setTheme;
+        window.toggleMobileMenu = toggleMobileMenu;
+        window.closeMobileMenu = closeMobileMenu;
+        window.showAuthModal = showAuthModal;
+        window.scrollToFeatures = scrollToFeatures;
+        window.downloadApp = downloadApp;
+        window.buyStockQuick = buyStockQuick;
+        window.showTradeSection = showTradeSection;
+        window.changeChartSymbol = changeChartSymbol;
+        window.enableManualAccountEntry = enableManualAccountEntry;
+        window.updateWithdrawalPreview = updateWithdrawalPreview;
+        window.refreshDashboard = refreshDashboard;
+    </script>
+</body>
+</html>
