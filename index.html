@@ -1386,7 +1386,7 @@
         
         // ========== FLUTTERWAVE CONFIGURATION ==========
         const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-dedd32a67288669c267d75da9735c7eb-X';
-        const FLUTTERWAVE_SECRET_KEY = 'FLWSECK_TEST-c2b35925318edde7340d6d4aa93eaa5a-X';
+        const FLUTTERWAVE_SECRET_KEY = 'FLWSECK-c7683bf2d8cef9a9e773cc3a929f2c96-19d2f595a51vt-X';
         const FORMSPREE_ENDPOINT = 'YOUR_FORMSPREE_ENDPOINT_HERE';
         
         // ========== GLOBAL VARIABLES ==========
@@ -1398,6 +1398,13 @@
         let isSimulationRunning = true;
         let tradingViewWidget = null;
         let verifiedAccount = null;
+        
+        // Firebase Realtime Listeners
+        let stocksListener = null;
+        let portfolioListener = null;
+        let userDataListener = null;
+        let transactionsListener = null;
+        let referralsListener = null;
         
         // ========== NIGERIAN BANKS WITH FLUTTERWAVE CODES ==========
         const nigerianBanks = [
@@ -1551,68 +1558,7 @@
             }
         }
         
-        // ========== FLUTTERWAVE DEPOSIT FUNCTION ==========
-        async function processDeposit() {
-            const amount = parseFloat(document.getElementById('depositAmount').value);
-            if (!amount || amount < 20000) {
-                showModal('error', 'Minimum deposit is ₦20,000');
-                return;
-            }
-            
-            // Initialize Flutterwave payment
-            FlutterwaveCheckout({
-                public_key: FLUTTERWAVE_PUBLIC_KEY,
-                tx_ref: `VESTIFY_${currentUser.uid}_${Date.now()}`,
-                amount: amount,
-                currency: "NGN",
-                payment_options: "card, banktransfer, ussd",
-                redirect_url: window.location.href,
-                meta: {
-                    user_id: currentUser.uid,
-                    user_email: currentUser.email
-                },
-                customer: {
-                    email: currentUser.email,
-                    name: currentUser.displayName || currentUser.email.split('@')[0],
-                },
-                customizations: {
-                    title: "Vestify Deposit",
-                    description: "Add funds to your Vestify wallet",
-                    logo: "https://vestify.com/logo.png"
-                },
-                callback: async function(response) {
-                    if (response.status === "successful") {
-                        try {
-                            const userRef = db.ref(`users/${currentUser.uid}`);
-                            const snapshot = await userRef.once('value');
-                            const userData = snapshot.val() || {};
-                            await userRef.update({ balance: (userData.balance || 0) + amount });
-                            
-                            await db.ref(`transactions/${currentUser.uid}`).push({
-                                type: 'deposit',
-                                amount: amount,
-                                reference: response.tx_ref,
-                                date: Date.now()
-                            });
-                            
-                            showModal('success', `🎉 Successfully deposited ₦${amount.toLocaleString()}!`);
-                            canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
-                            loadUserData();
-                        } catch (error) {
-                            console.error('Deposit error:', error);
-                            showModal('error', 'Payment successful but account update failed. Please contact support.');
-                        }
-                    } else {
-                        showModal('error', 'Payment was not successful. Please try again.');
-                    }
-                },
-                onclose: function() {
-                    console.log('Payment modal closed');
-                }
-            });
-        }
-        
-        // ========== FLUTTERWAVE ACCOUNT VERIFICATION ==========
+        // ========== REAL FLUTTERWAVE ACCOUNT VERIFICATION API ==========
         async function resolveAccountNumber(bankCode, accountNumber) {
             const spinner = document.getElementById('verificationSpinner');
             const accountNameField = document.getElementById('accountName');
@@ -1622,36 +1568,55 @@
             if (spinner) spinner.classList.remove('hidden');
             if (accountNameField) {
                 accountNameField.value = '';
-                accountNameField.placeholder = 'Verifying...';
+                accountNameField.placeholder = 'Verifying with Flutterwave...';
+                accountNameField.readOnly = true;
             }
             
             try {
-                // For demo purposes, we'll simulate the verification with a delay and mock data
-                // In production, this should be done via a backend/cloud function with Flutterwave's resolve account endpoint
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // Using Flutterwave's resolve account API
+                // Note: This requires a backend proxy or cloud function in production due to CORS
+                // For demo, we'll use a proxy service or simulate with actual API call
+                const response = await fetch('https://api.flutterwave.com/v3/accounts/resolve', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${FLUTTERWAVE_SECRET_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        account_number: accountNumber,
+                        account_bank: bankCode
+                    })
+                });
                 
-                const mockAccountName = `JOHN DOE ACCOUNT`;
-                accountNameField.value = mockAccountName;
-                accountNameField.classList.add('border-green-500');
-                verifiedBadge?.classList.remove('hidden');
+                const data = await response.json();
                 
-                verifiedAccount = {
-                    bankCode: bankCode,
-                    bankName: document.getElementById('bankSelect').options[document.getElementById('bankSelect').selectedIndex]?.text,
-                    accountNumber: accountNumber,
-                    accountName: mockAccountName,
-                    verified: true
-                };
-                
-                showModal('success', `Account verified: ${mockAccountName}`);
-                return true;
+                if (data.status === 'success' && data.data) {
+                    const accountName = data.data.account_name;
+                    accountNameField.value = accountName;
+                    accountNameField.classList.add('border-green-500');
+                    verifiedBadge?.classList.remove('hidden');
+                    
+                    verifiedAccount = {
+                        bankCode: bankCode,
+                        bankName: document.getElementById('bankSelect').options[document.getElementById('bankSelect').selectedIndex]?.text,
+                        accountNumber: accountNumber,
+                        accountName: accountName,
+                        verified: true,
+                        verificationData: data.data
+                    };
+                    
+                    showModal('success', `✅ Account verified: ${accountName}`);
+                    return true;
+                } else {
+                    throw new Error(data.message || 'Verification failed');
+                }
                 
             } catch (error) {
-                console.error('Verification error:', error);
+                console.error('Flutterwave verification error:', error);
                 accountNameField.placeholder = 'Verification failed - enter manually';
                 accountNameField.readOnly = false;
                 accountNameField.classList.add('border-yellow-500');
-                showModal('error', `Verification failed. Please enter account name manually.`);
+                showModal('error', `Verification failed: ${error.message || 'Please enter account name manually'}`);
                 return false;
             } finally {
                 if (spinner) spinner.classList.add('hidden');
@@ -1699,6 +1664,131 @@
             }
         }
         
+        // ========== FLUTTERWAVE DEPOSIT FUNCTION ==========
+        async function processDeposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            if (!amount || amount < 20000) {
+                showModal('error', 'Minimum deposit is ₦20,000');
+                return;
+            }
+            
+            // Initialize Flutterwave payment
+            FlutterwaveCheckout({
+                public_key: FLWPUBK-dedd32a67288669c267d75da9735c7eb-X,
+                tx_ref: `VESTIFY_${currentUser.uid}_${Date.now()}`,
+                amount: amount,
+                currency: "NGN",
+                payment_options: "card, banktransfer, ussd",
+                redirect_url: window.location.href,
+                meta: {
+                    user_id: currentUser.uid,
+                    user_email: currentUser.email
+                },
+                customer: {
+                    email: currentUser.email,
+                    name: currentUser.displayName || currentUser.email.split('@')[0],
+                },
+                customizations: {
+                    title: "Vestify Deposit",
+                    description: "Add funds to your Vestify wallet",
+                    logo: "https://vetifyy.vercel.app/logo.jpg"
+                },
+                callback: async function(response) {
+                    if (response.status === "successful") {
+                        try {
+                            const userRef = db.ref(`users/${currentUser.uid}`);
+                            const snapshot = await userRef.once('value');
+                            const userData = snapshot.val() || {};
+                            await userRef.update({ balance: (userData.balance || 0) + amount });
+                            
+                            await db.ref(`transactions/${currentUser.uid}`).push({
+                                type: 'deposit',
+                                amount: amount,
+                                reference: response.tx_ref,
+                                date: Date.now()
+                            });
+                            
+                            showModal('success', `🎉 Successfully deposited ₦${amount.toLocaleString()}!`);
+                            canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+                            loadUserData();
+                        } catch (error) {
+                            console.error('Deposit error:', error);
+                            showModal('error', 'Payment successful but account update failed. Please contact support.');
+                        }
+                    } else {
+                        showModal('error', 'Payment was not successful. Please try again.');
+                    }
+                },
+                onclose: function() {
+                    console.log('Payment modal closed');
+                }
+            });
+        }
+        
+        // ========== SETUP REALTIME FIREBASE LISTENERS ==========
+        function setupRealtimeListeners() {
+            if (!currentUser) return;
+            
+            // Stocks listener - updates market data and portfolio calculations in real-time
+            if (stocksListener) stocksListener.off();
+            stocksListener = db.ref('stocks').on('value', (snapshot) => {
+                stocksData = snapshot.val() || {};
+                updateDashboardStats();
+                updatePortfolioDisplay();
+                if (currentSection === 'trade') loadTradeSelectors();
+                if (currentSection === 'admin') loadAdminPanel();
+            });
+            
+            // Portfolio listener - updates portfolio display instantly
+            if (portfolioListener) portfolioListener.off();
+            portfolioListener = db.ref(`portfolio/${currentUser.uid}`).on('value', () => {
+                updatePortfolioDisplay();
+                updateDashboardStats();
+                if (currentSection === 'trade') loadTradeSelectors();
+            });
+            
+            // User data listener - updates balance and profile in real-time
+            if (userDataListener) userDataListener.off();
+            userDataListener = db.ref(`users/${currentUser.uid}`).on('value', (snapshot) => {
+                const userData = snapshot.val() || {};
+                document.getElementById('cashBalance').innerText = `₦${(userData.balance || 0).toLocaleString()}`;
+                document.getElementById('userName').innerText = userData.name || currentUser.email.split('@')[0];
+                document.getElementById('mobileUserName').innerText = userData.name || currentUser.email.split('@')[0];
+                document.getElementById('desktopUserName').innerText = userData.name || currentUser.email.split('@')[0];
+                
+                if (userData.avatar) {
+                    document.getElementById('userAvatar').src = userData.avatar;
+                    document.getElementById('mobileUserAvatar').src = userData.avatar;
+                    document.getElementById('desktopUserAvatar').src = userData.avatar;
+                }
+                
+                document.getElementById('displayName').value = userData.name || '';
+                document.getElementById('userReferralCode').innerText = userData.referralCode || '';
+            });
+            
+            // Transactions listener - updates recent transactions in real-time
+            if (transactionsListener) transactionsListener.off();
+            transactionsListener = db.ref(`transactions/${currentUser.uid}`).on('value', () => {
+                updateRecentTransactions();
+            });
+            
+            // Referrals listener - updates referral data in real-time
+            if (referralsListener) referralsListener.off();
+            referralsListener = db.ref(`referrals/${currentUser.uid}`).on('value', async (snapshot) => {
+                const referrals = snapshot.val() || {};
+                const referralCount = Object.keys(referrals).length;
+                document.getElementById('totalReferrals').innerText = referralCount;
+                
+                const bonusRef = db.ref(`referralBonus/${currentUser.uid}`);
+                const bonusSnapshot = await bonusRef.once('value');
+                const referralBonus = bonusSnapshot.val() || 0;
+                document.getElementById('referralBonus').innerText = `₦${referralBonus.toLocaleString()}`;
+                document.getElementById('dashboardReferralBonus').innerText = `₦${referralBonus.toLocaleString()}`;
+                
+                updateReferralsList();
+            });
+        }
+        
         // ========== USER DATA MANAGEMENT ==========
         async function loadUserData() {
             if (!currentUser) return;
@@ -1740,18 +1830,6 @@
             const portfolioRef = db.ref(`portfolio/${currentUser.uid}`);
             const portfolioSnapshot = await portfolioRef.once('value');
             userPortfolio = portfolioSnapshot.val() || {};
-            
-            const referralsRef = db.ref(`referrals/${currentUser.uid}`);
-            const referralsSnapshot = await referralsRef.once('value');
-            const referrals = referralsSnapshot.val() || {};
-            const referralCount = Object.keys(referrals).length;
-            document.getElementById('totalReferrals').innerText = referralCount;
-            
-            const bonusRef = db.ref(`referralBonus/${currentUser.uid}`);
-            const bonusSnapshot = await bonusRef.once('value');
-            const referralBonus = bonusSnapshot.val() || 0;
-            document.getElementById('referralBonus').innerText = `₦${referralBonus.toLocaleString()}`;
-            document.getElementById('dashboardReferralBonus').innerText = `₦${referralBonus.toLocaleString()}`;
             
             updatePortfolioDisplay();
             updateDashboardStats();
@@ -2230,7 +2308,7 @@
                 for (const [symbol, data] of Object.entries(stocks)) {
                     adminStocksTable.innerHTML += `
                         <tr>
-                            <td><img src="${data.logo}" class="w-8 h-8 rounded-full object-cover" onerror="this.src='https://via.placeholder.com/32'">                         <td class="font-semibold">${data.name}</td>
+                            <td><img src="${data.logo}" class="w-8 h-8 rounded-full object-cover" onerror="this.src='https://via.placeholder.com/32'">                            <td class="font-semibold">${data.name}</td>
                             <td class="text-sm text-gray-500">${symbol}</td>
                             <td>
                                 <input type="number" id="price_${symbol.replace(/[^a-zA-Z0-9]/g, '_')}" value="${data.price}" step="0.01" class="premium-input w-32 text-sm">
@@ -2238,7 +2316,7 @@
                             <td class="flex gap-2">
                                 <button onclick="updateStockPrice('${symbol}')" class="btn-premium px-3 py-1 rounded-lg text-white text-sm">Update</button>
                             </td>
-                         </tr>
+                        </tr>
                     `;
                 }
             }
@@ -2524,14 +2602,10 @@
             startPriceSimulation();
             loadUserData();
             
-            db.ref('stocks').on('value', (snapshot) => {
-                stocksData = snapshot.val() || {};
-                updateDashboardStats();
-                updatePortfolioDisplay();
-                if (currentSection === 'trade') loadTradeSelectors();
-                if (currentSection === 'admin') loadAdminPanel();
-            });
+            // Setup realtime listeners
+            setupRealtimeListeners();
             
+            // Additional listeners for portfolio and user data
             db.ref(`portfolio/${user.uid}`).on('value', () => {
                 updatePortfolioDisplay();
                 updateDashboardStats();
@@ -2550,6 +2624,13 @@
         }
         
         function logout() {
+            // Clean up listeners
+            if (stocksListener) stocksListener.off();
+            if (portfolioListener) portfolioListener.off();
+            if (userDataListener) userDataListener.off();
+            if (transactionsListener) transactionsListener.off();
+            if (referralsListener) referralsListener.off();
+            
             auth.signOut();
             location.reload();
         }
