@@ -16,6 +16,8 @@
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <!-- Flutterwave Payment SDK -->
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
     <style>
         /* ========== PREMIUM STYLES - 2000+ LINES OF CSS ========== */
         @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
@@ -703,7 +705,7 @@
                             <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         </div>
                         <h3 class="text-xl font-bold mb-3">Secure Payments</h3>
-                        <p class="text-gray-400 leading-relaxed">Safe deposits and withdrawals with Korapay integration. All transactions are encrypted and secure.</p>
+                        <p class="text-gray-400 leading-relaxed">Safe deposits and withdrawals with Flutterwave integration. All transactions are encrypted and secure.</p>
                     </div>
                 </div>
             </div>
@@ -727,7 +729,7 @@
                     <div class="text-center relative">
                         <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold shadow-lg">2</div>
                         <h3 class="font-bold mb-2 text-lg">Deposit Funds</h3>
-                        <p class="text-gray-400 text-sm">Minimum ₦20,000 deposit via Korapay</p>
+                        <p class="text-gray-400 text-sm">Minimum ₦20,000 deposit via Flutterwave</p>
                         <div class="hidden md:block absolute top-10 left-3/4 w-full h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"></div>
                     </div>
                     <div class="text-center relative">
@@ -1054,7 +1056,7 @@
                     </div>
                 </div>
                 
-                <!-- Deposit Section -->
+                <!-- Deposit Section with Flutterwave Integration -->
                 <div id="depositSection" class="section fade-in-up" style="display: none;">
                     <h2 class="text-3xl font-bold mb-6">Deposit Funds</h2>
                     <div class="card max-w-md mx-auto">
@@ -1063,13 +1065,13 @@
                                 <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                             </div>
                             <p class="text-gray-500">Minimum Deposit: <span class="font-bold text-green-500">₦20,000</span></p>
-                            <p class="text-xs text-gray-400 mt-1">Powered by Korapay</p>
+                            <p class="text-xs text-gray-400 mt-1">Powered by Flutterwave</p>
                         </div>
                         <input type="number" id="depositAmount" placeholder="Enter amount (₦)" class="premium-input mb-4">
-                        <button onclick="processDeposit()" class="btn-premium w-full py-3 rounded-xl text-white font-semibold">Deposit via Korapay</button>
+                        <button onclick="processDeposit()" class="btn-premium w-full py-3 rounded-xl text-white font-semibold">Deposit via Flutterwave</button>
                         <div class="mt-4 p-3 bg-blue-500/10 rounded-lg">
                             <p class="text-xs text-center">✅ Instant credit to your Vestify wallet</p>
-                            <p class="text-xs text-center mt-1">🔒 Secured by Korapay Payment Gateway</p>
+                            <p class="text-xs text-center mt-1">🔒 Secured by Flutterwave Payment Gateway</p>
                         </div>
                     </div>
                 </div>
@@ -1382,10 +1384,10 @@
         const auth = firebase.auth();
         const db = firebase.database();
         
-        // ========== API KEYS (Replace with your actual keys) ==========
-        const KORAPAY_PUBLIC_KEY = 'YOUR_KORAPAY_PUBLIC_KEY_HERE';
+        // ========== FLUTTERWAVE CONFIGURATION ==========
+        const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-dedd32a67288669c267d75da9735c7eb-X';
+        const FLUTTERWAVE_SECRET_KEY = 'FLWSECK_TEST-c2b35925318edde7340d6d4aa93eaa5a-X';
         const FORMSPREE_ENDPOINT = 'YOUR_FORMSPREE_ENDPOINT_HERE';
-        const FLUTTERWAVE_SECRET_KEY = 'YOUR_FLUTTERWAVE_SECRET_KEY_HERE';
         
         // ========== GLOBAL VARIABLES ==========
         let currentUser = null;
@@ -1549,6 +1551,67 @@
             }
         }
         
+        // ========== FLUTTERWAVE DEPOSIT FUNCTION ==========
+        async function processDeposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            if (!amount || amount < 20000) {
+                showModal('error', 'Minimum deposit is ₦20,000');
+                return;
+            }
+            
+            // Initialize Flutterwave payment
+            FlutterwaveCheckout({
+                public_key: FLUTTERWAVE_PUBLIC_KEY,
+                tx_ref: `VESTIFY_${currentUser.uid}_${Date.now()}`,
+                amount: amount,
+                currency: "NGN",
+                payment_options: "card, banktransfer, ussd",
+                redirect_url: window.location.href,
+                meta: {
+                    user_id: currentUser.uid,
+                    user_email: currentUser.email
+                },
+                customer: {
+                    email: currentUser.email,
+                    name: currentUser.displayName || currentUser.email.split('@')[0],
+                },
+                customizations: {
+                    title: "Vestify Deposit",
+                    description: "Add funds to your Vestify wallet",
+                    logo: "https://vestify.com/logo.png"
+                },
+                callback: async function(response) {
+                    if (response.status === "successful") {
+                        try {
+                            const userRef = db.ref(`users/${currentUser.uid}`);
+                            const snapshot = await userRef.once('value');
+                            const userData = snapshot.val() || {};
+                            await userRef.update({ balance: (userData.balance || 0) + amount });
+                            
+                            await db.ref(`transactions/${currentUser.uid}`).push({
+                                type: 'deposit',
+                                amount: amount,
+                                reference: response.tx_ref,
+                                date: Date.now()
+                            });
+                            
+                            showModal('success', `🎉 Successfully deposited ₦${amount.toLocaleString()}!`);
+                            canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+                            loadUserData();
+                        } catch (error) {
+                            console.error('Deposit error:', error);
+                            showModal('error', 'Payment successful but account update failed. Please contact support.');
+                        }
+                    } else {
+                        showModal('error', 'Payment was not successful. Please try again.');
+                    }
+                },
+                onclose: function() {
+                    console.log('Payment modal closed');
+                }
+            });
+        }
+        
         // ========== FLUTTERWAVE ACCOUNT VERIFICATION ==========
         async function resolveAccountNumber(bankCode, accountNumber) {
             const spinner = document.getElementById('verificationSpinner');
@@ -1563,13 +1626,10 @@
             }
             
             try {
-                // Note: For production, this should be done via a backend/cloud function
                 // For demo purposes, we'll simulate the verification with a delay and mock data
-                // Replace this with actual Flutterwave API call when you have the secret key
-                
+                // In production, this should be done via a backend/cloud function with Flutterwave's resolve account endpoint
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 
-                // Simulate successful verification (replace with actual API call)
                 const mockAccountName = `JOHN DOE ACCOUNT`;
                 accountNameField.value = mockAccountName;
                 accountNameField.classList.add('border-green-500');
@@ -1800,21 +1860,35 @@
             if (transactions) {
                 const recent = Object.entries(transactions).slice(-5).reverse();
                 for (const [id, tx] of recent) {
-                    const stockRef = db.ref(`stocks/${tx.symbol}`);
-                    const stockSnapshot = await stockRef.once('value');
-                    const stockName = stockSnapshot.val()?.name || tx.symbol;
-                    container.innerHTML += `
-                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl hover:scale-[1.02] transition-all">
-                            <div>
-                                <p class="font-semibold">${tx.type === 'buy' ? '🟢 Bought' : '🔴 Sold'} ${stockName}</p>
-                                <p class="text-xs text-gray-500">${new Date(tx.date).toLocaleString()}</p>
+                    if (tx.type === 'deposit') {
+                        container.innerHTML += `
+                            <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl hover:scale-[1.02] transition-all">
+                                <div>
+                                    <p class="font-semibold">🟢 Deposit</p>
+                                    <p class="text-xs text-gray-500">${new Date(tx.date).toLocaleString()}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-green-500">+₦${tx.amount.toLocaleString()}</p>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <p class="font-bold">${tx.units} units @ ₦${tx.price}</p>
-                                <p class="text-sm ${tx.type === 'buy' ? 'text-red-500' : 'text-green-500'}">${tx.type === 'buy' ? '-' : '+'}₦${tx.total.toLocaleString()}</p>
+                        `;
+                    } else {
+                        const stockRef = db.ref(`stocks/${tx.symbol}`);
+                        const stockSnapshot = await stockRef.once('value');
+                        const stockName = stockSnapshot.val()?.name || tx.symbol;
+                        container.innerHTML += `
+                            <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl hover:scale-[1.02] transition-all">
+                                <div>
+                                    <p class="font-semibold">${tx.type === 'buy' ? '🟢 Bought' : '🔴 Sold'} ${stockName}</p>
+                                    <p class="text-xs text-gray-500">${new Date(tx.date).toLocaleString()}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold">${tx.units} units @ ₦${tx.price}</p>
+                                    <p class="text-sm ${tx.type === 'buy' ? 'text-red-500' : 'text-green-500'}">${tx.type === 'buy' ? '-' : '+'}₦${tx.total.toLocaleString()}</p>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 }
             } else {
                 container.innerHTML = '<p class="text-center text-gray-500 py-8">No transactions yet. Start trading now!</p>';
@@ -2002,17 +2076,7 @@
             }
         }
         
-        // ========== DEPOSIT & WITHDRAWAL ==========
-        async function processDeposit() {
-            const amount = parseFloat(document.getElementById('depositAmount').value);
-            if (!amount || amount < 20000) {
-                showModal('error', 'Minimum deposit is ₦20,000');
-                return;
-            }
-            
-            showModal('info', 'Korapay payment integration will open here. Please configure your Korapay public key.');
-        }
-        
+        // ========== WITHDRAWAL FUNCTION ==========
         async function processWithdrawal() {
             const bankSelect = document.getElementById('bankSelect');
             const bankCode = bankSelect.value;
@@ -2166,16 +2230,15 @@
                 for (const [symbol, data] of Object.entries(stocks)) {
                     adminStocksTable.innerHTML += `
                         <tr>
-                            <td><img src="${data.logo}" class="w-8 h-8 rounded-full object-cover" onerror="this.src='https://via.placeholder.com/32'"></td>
-                            <td class="font-semibold">${data.name}</td>
+                            <td><img src="${data.logo}" class="w-8 h-8 rounded-full object-cover" onerror="this.src='https://via.placeholder.com/32'">                         <td class="font-semibold">${data.name}</td>
                             <td class="text-sm text-gray-500">${symbol}</td>
                             <td>
                                 <input type="number" id="price_${symbol.replace(/[^a-zA-Z0-9]/g, '_')}" value="${data.price}" step="0.01" class="premium-input w-32 text-sm">
                             </td>
                             <td class="flex gap-2">
                                 <button onclick="updateStockPrice('${symbol}')" class="btn-premium px-3 py-1 rounded-lg text-white text-sm">Update</button>
-                             </td>
-                        </tr>
+                            </td>
+                         </tr>
                     `;
                 }
             }
