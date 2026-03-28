@@ -16,12 +16,9 @@
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
-    <!-- Flutterwave Payment SDK -->
     <script src="https://checkout.flutterwave.com/v3.js"></script>
-    <!-- Cloudinary Upload Widget -->
     <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
     <style>
-        /* ========== PREMIUM STYLES ========== */
         @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
         
@@ -569,6 +566,31 @@
             background-size: 1000px 100%;
             animation: shimmer 2s infinite;
         }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        .disabled-btn {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .history-card {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .history-card:hover {
+            transform: scale(1.02);
+            background: rgba(59,130,246,0.1);
+        }
     </style>
 </head>
 <body class="dark">
@@ -950,9 +972,64 @@
                         </div>
                         <div id="marketStocks" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                     </div>
+                    <!-- Recent Trades & Recent Transactions (clickable) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="card history-card" onclick="showHistory('trades')">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold">Recent Trades</h3>
+                                <span class="text-blue-500 text-sm">Click to view all →</span>
+                            </div>
+                            <div id="recentTrades" class="mt-4 space-y-3"></div>
+                        </div>
+                        <div class="card history-card" onclick="showHistory('transactions')">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-bold">Recent Transactions</h3>
+                                <span class="text-blue-500 text-sm">Click to view all →</span>
+                            </div>
+                            <div id="recentTransactions" class="mt-4 space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full History Views (Trades) -->
+                <div id="tradeHistorySection" class="section fade-in-up" style="display: none;">
+                    <div class="flex items-center gap-4 mb-6">
+                        <button onclick="goBackToDashboard()" class="btn-premium px-4 py-2 rounded-lg text-white flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Back to Dashboard
+                        </button>
+                        <h2 class="text-3xl font-bold">Trade History (Buy/Sell)</h2>
+                    </div>
                     <div class="card">
-                        <h3 class="text-xl font-bold mb-4">Recent Transactions</h3>
-                        <div id="recentTransactions" class="space-y-3"></div>
+                        <div class="overflow-x-auto">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr><th>Type</th><th>Stock</th><th>Units</th><th>Price</th><th>Total</th><th>Date</th></tr>
+                                </thead>
+                                <tbody id="fullTradeHistoryBody"></tbody>
+                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full History Views (Transactions) -->
+                <div id="transactionHistorySection" class="section fade-in-up" style="display: none;">
+                    <div class="flex items-center gap-4 mb-6">
+                        <button onclick="goBackToDashboard()" class="btn-premium px-4 py-2 rounded-lg text-white flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Back to Dashboard
+                        </button>
+                        <h2 class="text-3xl font-bold">Transaction History (Deposits/Withdrawals)</h2>
+                    </div>
+                    <div class="card">
+                        <div class="overflow-x-auto">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr><th>Type</th><th>Amount</th><th>Reference</th><th>Status</th><th>Date</th> </tr>
+                                </thead>
+                                <tbody id="fullTransactionHistoryBody"></tbody>
+                             </table>
+                        </div>
                     </div>
                 </div>
                 
@@ -963,17 +1040,10 @@
                         <div class="overflow-x-auto">
                             <table class="premium-table">
                                 <thead>
-                                    <tr>
-                                        <th>Stock</th>
-                                        <th>Units</th>
-                                        <th>Avg Price</th>
-                                        <th>Current Price</th>
-                                        <th>Total Value</th>
-                                        <th>P/L</th>
-                                    </tr>
+                                    <tr><th>Stock</th><th>Units</th><th>Avg Price</th><th>Current Price</th><th>Total Value</th><th>P/L</th> </tr>
                                 </thead>
                                 <tbody id="portfolioTable"></tbody>
-                            </table>
+                             </table>
                         </div>
                     </div>
                 </div>
@@ -1047,7 +1117,7 @@
                     </div>
                 </div>
                 
-                <!-- Withdraw Section -->
+                <!-- Withdraw Section (Paystack verification) -->
                 <div id="withdrawSection" class="section fade-in-up" style="display: none;">
                     <h2 class="text-3xl font-bold mb-6">Withdraw Funds</h2>
                     <div class="card max-w-md mx-auto">
@@ -1057,7 +1127,7 @@
                             </div>
                             <p class="text-gray-500">Minimum Withdrawal: <span class="font-bold text-yellow-500">₦50,000</span></p>
                             <p class="text-xs text-gray-400">5% withdrawal fee applies</p>
-                            <p class="text-xs text-green-500 mt-1">✅ Account verification via Flutterwave</p>
+                            <p class="text-xs text-green-500 mt-1">✅ Account verification via Paystack</p>
                         </div>
                         
                         <div class="mb-4">
@@ -1075,7 +1145,7 @@
                                     <div class="verification-spinner"></div>
                                 </div>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1">Enter account number to auto-verify with Flutterwave</p>
+                            <p class="text-xs text-gray-500 mt-1">Enter account number to auto-verify with Paystack</p>
                         </div>
                         
                         <div class="mb-4">
@@ -1109,7 +1179,7 @@
                         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                             <p class="text-xs text-center text-gray-500">
                                 ⚡ Withdrawals are manually processed within 24-48 hours<br>
-                                🔒 Your account will be verified with Flutterwave for security
+                                🔒 Your account will be verified with Paystack for security
                             </p>
                             <p class="text-xs text-center mt-2">
                                 <button onclick="enableManualAccountEntry()" class="text-blue-500 hover:underline">Can't verify? Enter account name manually →</button>
@@ -1127,7 +1197,7 @@
                                 <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                             </div>
                             <h3 class="text-2xl font-bold mb-2">Earn 20% Commission</h3>
-                            <p class="text-gray-500 mb-6">Get 20% of your referral's first deposit amount</p>
+                            <p class="text-gray-500 mb-6">Get 20% of your referral's first deposit amount (min ₦20,000 deposit required)</p>
                             <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl mb-6">
                                 <p class="text-sm text-gray-500 mb-2">Your Referral Link</p>
                                 <div class="flex gap-2">
@@ -1243,16 +1313,10 @@
                         <div class="overflow-x-auto">
                             <table class="premium-table">
                                 <thead>
-                                    <tr>
-                                        <th>Logo</th>
-                                        <th>Stock</th>
-                                        <th>Symbol</th>
-                                        <th>Current Price (₦)</th>
-                                        <th>Actions</th>
-                                    </tr>
+                                    <tr><th>Logo</th><th>Stock</th><th>Symbol</th><th>Current Price (₦)</th><th>Actions</th> </tr>
                                 </thead>
                                 <tbody id="adminStocksTable"></tbody>
-                            </table>
+                             </table>
                         </div>
                     </div>
                     
@@ -1286,16 +1350,10 @@
                         <div class="overflow-x-auto">
                             <table class="premium-table">
                                 <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Email</th>
-                                        <th>Balance</th>
-                                        <th>Referrals</th>
-                                        <th>Actions</th>
-                                    </tr>
+                                    <tr><th>User</th><th>Email</th><th>Balance</th><th>Referrals</th><th>Actions</th> </tr>
                                 </thead>
                                 <tbody id="adminUsersTable"></tbody>
-                            </table>
+                             </table>
                         </div>
                     </div>
                 </div>
@@ -1359,6 +1417,9 @@
         const FLUTTERWAVE_SECRET_KEY = 'FLWSECK-c7683bf2d8cef9a9e773cc3a929f2c96-19d2f595a51vt-X';
         const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mreobvvr';
         
+        // ========== PAYSTACK CONFIGURATION ==========
+        const PAYSTACK_SECRET_KEY = 'sk_test_252a00711eeb2f4a2ac11f0f7fbf91b23d51e166';
+        
         // ========== CLOUDINARY CONFIGURATION ==========
         const CLOUDINARY_CLOUD_NAME = 'dzhnuzoov';
         const CLOUDINARY_UPLOAD_PRESET = 'vestify_uploads';
@@ -1372,6 +1433,7 @@
         let isSimulationRunning = true;
         let tradingViewWidget = null;
         let verifiedAccount = null;
+        let isLoading = false;
         
         // Firebase Realtime Listeners
         let stocksListener = null;
@@ -1379,8 +1441,9 @@
         let userDataListener = null;
         let transactionsListener = null;
         let referralsListener = null;
+        let adminUsersListener = null;  // For admin panel realtime updates
         
-        // ========== NIGERIAN BANKS WITH FLUTTERWAVE CODES ==========
+        // ========== NIGERIAN BANKS ==========
         const nigerianBanks = [
             { code: "058", name: "Access Bank" },
             { code: "023", name: "Citibank" },
@@ -1404,60 +1467,45 @@
             { code: "035", name: "Wema Bank" },
             { code: "057", name: "Zenith Bank" },
             { code: "090", name: "Kuda Bank" },
-            { code: "999", name: "Opay" },
-            { code: "999", name: "Palmpay" },
-            { code: "999", name: "Moniepoint Microfinance Bank" },
-            { code: "999", name: "VFD Microfinance Bank" },
-            { code: "999", name: "Sparkle Microfinance Bank" },
-            { code: "999", name: "Rubies Bank" }
+            { code: "100004", name: "Opay" },
+            { code: "999991", name: "Palmpay" },
+            { code: "50515", name: "Moniepoint Microfinance Bank" },
+            { code: "566", name: "VFD Microfinance Bank" },
+            { code: "51310", name: "Sparkle Microfinance Bank" },
+            { code: "125", name: "Rubies Bank" }
         ];
         
-        // ========== COMPREHENSIVE STOCK DATABASE WITH FALLBACK LOGOS ==========
+        // ========== COMPREHENSIVE STOCK DATABASE ==========
         const stockDatabase = [
-            { symbol: "NGX:GUARANTY", name: "Guaranty Trust Bank", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 45.50 },
-            { symbol: "NGX:ZENITH", name: "Zenith Bank", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 38.75 },
-            { symbol: "NGX:NB", name: "Nigerian Breweries", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 52.30 },
-            { symbol: "NGX:DANGCEM", name: "Dangote Cement", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 285.60 },
-            { symbol: "NGX:MTNN", name: "MTN Nigeria", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 245.00 },
-            { symbol: "NGX:AIRTELAFRI", name: "Airtel Africa", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 1850.00 },
-            { symbol: "NGX:SEPLAT", name: "Seplat Energy", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 1250.00 },
-            { symbol: "NGX:UBA", name: "United Bank for Africa", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 22.80 },
-            { symbol: "NGX:FBNH", name: "First Bank Holdings", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 24.50 },
-            { symbol: "NGX:ACCESSCORP", name: "Access Corporation", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 19.75 },
-            { symbol: "NGX:TRANSCORP", name: "Transcorp", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 12.30 },
-            { symbol: "NGX:JAIZBANK", name: "Jaiz Bank", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 2.15 },
-            { symbol: "NGX:STERLNBANK", name: "Sterling Bank", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 4.85 },
-            { symbol: "NGX:WEMABANK", name: "Wema Bank", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 7.20 },
-            { symbol: "NGX:FCMB", name: "FCMB", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 6.45 },
-            { symbol: "NYSE:GOOGL", name: "Alphabet Inc. (Google)", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 142.50 },
-            { symbol: "NYSE:NESTLE", name: "Nestlé", country: "CH", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 112.30 },
-            { symbol: "NYSE:MSFT", name: "Microsoft", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 420.75 },
-            { symbol: "NASDAQ:AAPL", name: "Apple Inc.", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 175.20 },
-            { symbol: "NYSE:TSLA", name: "Tesla Inc.", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 245.60 },
-            { symbol: "NYSE:AMZN", name: "Amazon", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 178.90 },
-            { symbol: "NYSE:JPM", name: "JPMorgan Chase", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 168.40 },
-            { symbol: "NYSE:KO", name: "Coca-Cola", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 62.15 },
-            { symbol: "NYSE:WMT", name: "Walmart", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 59.80 },
-            { symbol: "NYSE:NFLX", name: "Netflix", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 485.50 },
-            { symbol: "NYSE:DIS", name: "Walt Disney", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 98.30 },
-            { symbol: "NASDAQ:META", name: "Meta Platforms", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 485.90 },
-            { symbol: "NYSE:V", name: "Visa", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 278.40 },
-            { symbol: "NYSE:JNJ", name: "Johnson & Johnson", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 156.70 },
-            { symbol: "LSE:ULVR", name: "Unilever", country: "UK", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 48.25 },
-            { symbol: "LSE:HSBA", name: "HSBC", country: "UK", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 6.80 },
-            { symbol: "LSE:BP", name: "BP", country: "UK", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 5.25 },
-            { symbol: "LSE:SHEL", name: "Shell", country: "UK", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 25.60 },
-            { symbol: "TSE:SHOP", name: "Shopify", country: "CA", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 68.90 },
-            { symbol: "TSE:RY", name: "Royal Bank of Canada", country: "CA", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 102.30 },
-            { symbol: "NYSE:BABA", name: "Alibaba", country: "CN", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 73.50 },
-            { symbol: "NYSE:JD", name: "JD.com", country: "CN", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 26.80 },
-            { symbol: "NASDAQ:ADBE", name: "Adobe", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 525.30 },
-            { symbol: "NYSE:CRM", name: "Salesforce", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 268.40 },
-            { symbol: "NASDAQ:AMD", name: "AMD", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 152.60 },
-            { symbol: "NASDAQ:NVDA", name: "NVIDIA", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 875.20 },
-            { symbol: "NYSE:INTC", name: "Intel", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 42.80 },
-            { symbol: "NYSE:PFE", name: "Pfizer", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 26.90 },
-            { symbol: "NYSE:BA", name: "Boeing", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 185.40 }
+            { symbol: "GTB", name: "Guaranty Trust Bank", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 45.50 },
+            { symbol: "ZENITH", name: "Zenith Bank", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 38.75 },
+            { symbol: "NB", name: "Nigerian Breweries", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 52.30 },
+            { symbol: "DANGCEM", name: "Dangote Cement", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 285.60 },
+            { symbol: "MTNN", name: "MTN Nigeria", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 245.00 },
+            { symbol: "AIRTELAFRI", name: "Airtel Africa", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 1850.00 },
+            { symbol: "SEPLAT", name: "Seplat Energy", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 1250.00 },
+            { symbol: "UBA", name: "United Bank for Africa", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 22.80 },
+            { symbol: "FBNH", name: "First Bank Holdings", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 24.50 },
+            { symbol: "ACCESSCORP", name: "Access Corporation", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 19.75 },
+            { symbol: "TRANSCORP", name: "Transcorp", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 12.30 },
+            { symbol: "JAIZBANK", name: "Jaiz Bank", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 2.15 },
+            { symbol: "STERLNBANK", name: "Sterling Bank", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 4.85 },
+            { symbol: "WEMABANK", name: "Wema Bank", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 7.20 },
+            { symbol: "FCMB", name: "FCMB", country: "NG", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 6.45 },
+            { symbol: "GOOGL", name: "Alphabet Inc. (Google)", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 142.50 },
+            { symbol: "NESTLE", name: "Nestlé", country: "CH", logo: "https://cdn-icons-png.flaticon.com/512/4248/4248448.png", initialPrice: 112.30 },
+            { symbol: "MSFT", name: "Microsoft", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 420.75 },
+            { symbol: "AAPL", name: "Apple Inc.", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 175.20 },
+            { symbol: "TSLA", name: "Tesla Inc.", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 245.60 },
+            { symbol: "AMZN", name: "Amazon", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 178.90 },
+            { symbol: "JPM", name: "JPMorgan Chase", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 168.40 },
+            { symbol: "KO", name: "Coca-Cola", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 62.15 },
+            { symbol: "WMT", name: "Walmart", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 59.80 },
+            { symbol: "NFLX", name: "Netflix", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 485.50 },
+            { symbol: "DIS", name: "Walt Disney", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 98.30 },
+            { symbol: "META", name: "Meta Platforms", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 485.90 },
+            { symbol: "V", name: "Visa", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 278.40 },
+            { symbol: "JNJ", name: "Johnson & Johnson", country: "US", logo: "https://cdn-icons-png.flaticon.com/512/732/732221.png", initialPrice: 156.70 }
         ];
         
         // ========== INITIALIZE DATABASE ==========
@@ -1465,8 +1513,9 @@
             const stocksRef = db.ref('stocks');
             const snapshot = await stocksRef.once('value');
             if (!snapshot.exists()) {
+                const updates = {};
                 for (const stock of stockDatabase) {
-                    await stocksRef.child(stock.symbol).set({
+                    updates[stock.symbol] = {
                         name: stock.name,
                         symbol: stock.symbol,
                         logo: stock.logo,
@@ -1475,8 +1524,9 @@
                         lastUpdate: Date.now(),
                         country: stock.country,
                         changePercent: 0
-                    });
+                    };
                 }
+                await stocksRef.set(updates);
                 console.log('✅ Stock database initialized with', stockDatabase.length, 'stocks');
             }
         }
@@ -1492,9 +1542,9 @@
                 if (stocks) {
                     for (const [symbol, data] of Object.entries(stocks)) {
                         const change = (Math.random() * 10 - 5) / 100;
-                        const newPrice = data.price * (1 + change);
+                        const newPrice = Math.max(0.01, data.price * (1 + change));
                         await stocksRef.child(symbol).update({
-                            price: Math.max(0.01, newPrice),
+                            price: newPrice,
                             lastUpdate: Date.now(),
                             changePercent: change * 100
                         });
@@ -1535,7 +1585,6 @@
         // ========== CLOUDINARY PROFILE PICTURE UPLOAD ==========
         function uploadProfilePicture() {
             if (!currentUser) return;
-            
             const cloudinaryWidget = cloudinary.createUploadWidget({
                 cloudName: CLOUDINARY_CLOUD_NAME,
                 uploadPreset: CLOUDINARY_UPLOAD_PRESET,
@@ -1550,16 +1599,13 @@
             }, async (error, result) => {
                 if (!error && result && result.event === 'success') {
                     const imageUrl = result.info.secure_url;
-                    
                     try {
                         await currentUser.updateProfile({ photoURL: imageUrl });
                         await db.ref(`users/${currentUser.uid}`).update({ avatar: imageUrl });
-                        
                         document.getElementById('userAvatar').src = imageUrl;
                         document.getElementById('mobileUserAvatar').src = imageUrl;
                         document.getElementById('desktopUserAvatar').src = imageUrl;
                         document.getElementById('profilePreview').src = imageUrl;
-                        
                         showModal('success', 'Profile picture updated successfully!');
                         canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                     } catch (err) {
@@ -1571,52 +1617,45 @@
                     showModal('error', 'Upload failed. Please try again.');
                 }
             });
-            
             cloudinaryWidget.open();
         }
         
-        // ========== FLUTTERWAVE ACCOUNT VERIFICATION ==========
-        async function resolveAccountNumber(bankCode, accountNumber) {
+        // ========== PAYSTACK ACCOUNT VERIFICATION ==========
+        async function resolveAccountNumberPaystack(bankCode, accountNumber) {
             const spinner = document.getElementById('verificationSpinner');
             const accountNameField = document.getElementById('accountName');
-            const verifyBtn = document.getElementById('verifyAccountBtn');
             const verifiedBadge = document.getElementById('verifiedBadge');
             
             if (spinner) spinner.classList.remove('hidden');
             if (accountNameField) {
                 accountNameField.value = '';
-                accountNameField.placeholder = 'Verifying with Flutterwave...';
+                accountNameField.placeholder = 'Verifying with Paystack...';
                 accountNameField.readOnly = true;
             }
             
             try {
-                const response = await fetch('https://api.flutterwave.com/v3/accounts/resolve', {
-                    method: 'POST',
+                // Call Paystack resolve account endpoint
+                const response = await fetch(`https://api.paystack.co/bank/resolve?account_number=${accountNumber}&bank_code=${bankCode}`, {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${FLUTTERWAVE_SECRET_KEY}`,
+                        'Authorization': `Bearer ${PAYSTACK_SECRET_KEY}`,
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        account_number: accountNumber,
-                        account_bank: bankCode
-                    })
+                    }
                 });
                 
                 const data = await response.json();
-                
-                if (data.status === 'success' && data.data) {
+                if (data.status && data.data) {
                     const accountName = data.data.account_name;
                     accountNameField.value = accountName;
                     accountNameField.classList.add('border-green-500');
-                    verifiedBadge?.classList.remove('hidden');
+                    if (verifiedBadge) verifiedBadge.classList.remove('hidden');
                     
                     verifiedAccount = {
                         bankCode: bankCode,
                         bankName: document.getElementById('bankSelect').options[document.getElementById('bankSelect').selectedIndex]?.text,
                         accountNumber: accountNumber,
                         accountName: accountName,
-                        verified: true,
-                        verificationData: data.data
+                        verified: true
                     };
                     
                     showModal('success', `✅ Account verified: ${accountName}`);
@@ -1624,9 +1663,8 @@
                 } else {
                     throw new Error(data.message || 'Verification failed');
                 }
-                
             } catch (error) {
-                console.error('Flutterwave verification error:', error);
+                console.error('Paystack verification error:', error);
                 accountNameField.placeholder = 'Verification failed - enter manually';
                 accountNameField.readOnly = false;
                 accountNameField.classList.add('border-yellow-500');
@@ -1634,7 +1672,6 @@
                 return false;
             } finally {
                 if (spinner) spinner.classList.add('hidden');
-                if (verifyBtn) verifyBtn.classList.remove('hidden');
             }
         }
         
@@ -1662,7 +1699,6 @@
         function updateWithdrawalPreview() {
             const amount = parseFloat(document.getElementById('withdrawAmount').value);
             const feeBreakdown = document.getElementById('feeBreakdown');
-            
             if (amount && amount >= 50000) {
                 const fee = amount * 0.05;
                 const net = amount - fee;
@@ -1670,78 +1706,130 @@
                 document.getElementById('previewFee').innerText = `₦${fee.toLocaleString()}`;
                 document.getElementById('previewNet').innerText = `₦${net.toLocaleString()}`;
                 feeBreakdown.classList.remove('hidden');
-            } else if (amount && amount < 50000 && amount > 0) {
-                feeBreakdown.classList.add('hidden');
-                showModal('info', 'Minimum withdrawal amount is ₦50,000');
             } else {
                 feeBreakdown.classList.add('hidden');
             }
         }
         
-        // ========== FLUTTERWAVE DEPOSIT FUNCTION ==========
+        // ========== FLUTTERWAVE DEPOSIT ==========
         async function processDeposit() {
             const amount = parseFloat(document.getElementById('depositAmount').value);
             if (!amount || amount < 20000) {
                 showModal('error', 'Minimum deposit is ₦20,000');
                 return;
             }
-            
-            FlutterwaveCheckout({
-                public_key: FLUTTERWAVE_PUBLIC_KEY,
-                tx_ref: `VESTIFY_${currentUser.uid}_${Date.now()}`,
-                amount: amount,
-                currency: "NGN",
-                payment_options: "card, banktransfer, ussd",
-                redirect_url: window.location.href,
-                meta: {
-                    user_id: currentUser.uid,
-                    user_email: currentUser.email
-                },
-                customer: {
-                    email: currentUser.email,
-                    name: currentUser.displayName || currentUser.email.split('@')[0],
-                },
-                customizations: {
-                    title: "Vestify Deposit",
-                    description: "Add funds to your Vestify wallet",
-                    logo: "https://vetifyy.vercel.app/logo.jpg"
-                },
-                callback: async function(response) {
-                    if (response.status === "successful") {
-                        try {
-                            const userRef = db.ref(`users/${currentUser.uid}`);
-                            const snapshot = await userRef.once('value');
-                            const userData = snapshot.val() || {};
-                            await userRef.update({ balance: (userData.balance || 0) + amount });
-                            
-                            await db.ref(`transactions/${currentUser.uid}`).push({
-                                type: 'deposit',
-                                amount: amount,
-                                reference: response.tx_ref,
-                                date: Date.now()
-                            });
-                            
-                            showModal('success', `🎉 Successfully deposited ₦${amount.toLocaleString()}!`);
-                            canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
-                            loadUserData();
-                        } catch (error) {
-                            console.error('Deposit error:', error);
-                            showModal('error', 'Payment successful but account update failed. Please contact support.');
-                        }
-                    } else {
-                        showModal('error', 'Payment was not successful. Please try again.');
-                    }
-                },
-                onclose: function() {
-                    console.log('Payment modal closed');
-                }
+            if (isLoading) {
+                showModal('info', 'Please wait, processing previous request...');
+                return;
+            }
+            isLoading = true;
+            const loadingSwal = Swal.fire({
+                title: 'Processing Deposit',
+                html: '<div class="loading-spinner"></div><p class="mt-2">Please wait...</p>',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                background: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff'
             });
+            try {
+                FlutterwaveCheckout({
+                    public_key: FLUTTERWAVE_PUBLIC_KEY,
+                    tx_ref: `VESTIFY_${currentUser.uid}_${Date.now()}`,
+                    amount: amount,
+                    currency: "NGN",
+                    payment_options: "card, banktransfer, ussd",
+                    redirect_url: window.location.href,
+                    meta: { user_id: currentUser.uid, user_email: currentUser.email },
+                    customer: { email: currentUser.email, name: currentUser.displayName || currentUser.email.split('@')[0] },
+                    customizations: { title: "Vestify Deposit", description: "Add funds to your Vestify wallet", logo: "https://vestify.com/logo.jpg" },
+                    callback: async function(response) {
+                        loadingSwal.close();
+                        if (response.status === "successful") {
+                            try {
+                                const userRef = db.ref(`users/${currentUser.uid}`);
+                                const snapshot = await userRef.once('value');
+                                const userData = snapshot.val() || {};
+                                await userRef.update({ balance: (userData.balance || 0) + amount });
+                                await db.ref(`transactions/${currentUser.uid}`).push({
+                                    type: 'deposit',
+                                    amount: amount,
+                                    reference: response.tx_ref,
+                                    date: Date.now(),
+                                    status: 'completed'
+                                });
+                                // Check for pending referrals and award bonus (minimum 20k)
+                                await checkAndAwardReferralBonus(amount);
+                                showModal('success', `🎉 Successfully deposited ₦${amount.toLocaleString()}!`);
+                                canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+                                loadUserData();
+                            } catch (error) {
+                                console.error('Deposit error:', error);
+                                showModal('error', 'Payment successful but account update failed. Please contact support.');
+                            }
+                        } else {
+                            showModal('error', 'Payment was not successful. Please try again.');
+                        }
+                        isLoading = false;
+                    },
+                    onclose: function() {
+                        loadingSwal.close();
+                        isLoading = false;
+                    }
+                });
+            } catch (error) {
+                loadingSwal.close();
+                isLoading = false;
+                showModal('error', 'Payment initialization failed. Please try again.');
+                console.error('Flutterwave error:', error);
+            }
+        }
+        
+        // ========== REFERRAL BONUS CHECK (only after first deposit >= 20000) ==========
+        async function checkAndAwardReferralBonus(depositAmount) {
+            try {
+                if (depositAmount < 20000) return; // Only award if deposit >= 20k
+                const pendingReferralsRef = db.ref(`pendingReferrals/${currentUser.uid}`);
+                const snapshot = await pendingReferralsRef.once('value');
+                const pendingReferrals = snapshot.val();
+                if (pendingReferrals) {
+                    for (const [refId, referral] of Object.entries(pendingReferrals)) {
+                        if (referral.status === 'pending_deposit') {
+                            const bonusAmount = depositAmount * 0.2;
+                            // Award bonus to referrer
+                            const referrerRef = db.ref(`users/${referral.referrerId}`);
+                            const referrerSnapshot = await referrerRef.once('value');
+                            const referrerData = referrerSnapshot.val() || {};
+                            await referrerRef.update({ balance: (referrerData.balance || 0) + bonusAmount });
+                            // Update referral bonus tracking
+                            const referralBonusRef = db.ref(`referralBonus/${referral.referrerId}`);
+                            const currentBonus = (await referralBonusRef.once('value')).val() || 0;
+                            await referralBonusRef.set(currentBonus + bonusAmount);
+                            // Update referral record
+                            await db.ref(`referrals/${referral.referrerId}/${currentUser.uid}`).set({
+                                referredUser: currentUser.uid,
+                                referredEmail: currentUser.email,
+                                date: Date.now(),
+                                depositAmount: depositAmount,
+                                bonusAwarded: bonusAmount,
+                                status: 'completed'
+                            });
+                            // Mark as processed
+                            await pendingReferralsRef.child(refId).update({
+                                status: 'processed',
+                                bonusAwarded: bonusAmount,
+                                processedAt: Date.now()
+                            });
+                            console.log(`Awarded bonus of ₦${bonusAmount} to ${referral.referrerId}`);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error awarding referral bonus:', error);
+            }
         }
         
         // ========== SETUP REALTIME FIREBASE LISTENERS ==========
         function setupRealtimeListeners() {
             if (!currentUser) return;
-            
             if (stocksListener) stocksListener.off();
             stocksListener = db.ref('stocks').on('value', (snapshot) => {
                 stocksData = snapshot.val() || {};
@@ -1750,14 +1838,12 @@
                 if (currentSection === 'trade') loadTradeSelectors();
                 if (currentSection === 'admin') loadAdminPanel();
             });
-            
             if (portfolioListener) portfolioListener.off();
             portfolioListener = db.ref(`portfolio/${currentUser.uid}`).on('value', () => {
                 updatePortfolioDisplay();
                 updateDashboardStats();
                 if (currentSection === 'trade') loadTradeSelectors();
             });
-            
             if (userDataListener) userDataListener.off();
             userDataListener = db.ref(`users/${currentUser.uid}`).on('value', (snapshot) => {
                 const userData = snapshot.val() || {};
@@ -1765,47 +1851,158 @@
                 document.getElementById('userName').innerText = userData.name || currentUser.email.split('@')[0];
                 document.getElementById('mobileUserName').innerText = userData.name || currentUser.email.split('@')[0];
                 document.getElementById('desktopUserName').innerText = userData.name || currentUser.email.split('@')[0];
-                
                 if (userData.avatar) {
                     document.getElementById('userAvatar').src = userData.avatar;
                     document.getElementById('mobileUserAvatar').src = userData.avatar;
                     document.getElementById('desktopUserAvatar').src = userData.avatar;
                     document.getElementById('profilePreview').src = userData.avatar;
                 }
-                
                 document.getElementById('displayName').value = userData.name || '';
                 document.getElementById('userReferralCode').innerText = userData.referralCode || '';
             });
-            
             if (transactionsListener) transactionsListener.off();
             transactionsListener = db.ref(`transactions/${currentUser.uid}`).on('value', () => {
-                updateRecentTransactions();
+                updateRecentTradesAndTransactions();
+                if (currentSection === 'dashboard') updateDashboardRecent();
             });
-            
             if (referralsListener) referralsListener.off();
             referralsListener = db.ref(`referrals/${currentUser.uid}`).on('value', async (snapshot) => {
                 const referrals = snapshot.val() || {};
                 const referralCount = Object.keys(referrals).length;
                 document.getElementById('totalReferrals').innerText = referralCount;
-                
                 const bonusRef = db.ref(`referralBonus/${currentUser.uid}`);
                 const bonusSnapshot = await bonusRef.once('value');
                 const referralBonus = bonusSnapshot.val() || 0;
                 document.getElementById('referralBonus').innerText = `₦${referralBonus.toLocaleString()}`;
                 document.getElementById('dashboardReferralBonus').innerText = `₦${referralBonus.toLocaleString()}`;
-                
                 updateReferralsList();
             });
+            
+            // Admin realtime listener for users list (if admin)
+            if (currentUser.email === 'jesseegwuatu@gmail.com') {
+                if (adminUsersListener) adminUsersListener.off();
+                adminUsersListener = db.ref('users').on('value', (snapshot) => {
+                    allUsers = snapshot.val() || {};
+                    if (currentSection === 'admin') loadAdminPanel(); // Refresh admin panel when users change
+                });
+            }
+        }
+        
+        // ========== UPDATE RECENT TRADES & TRANSACTIONS (for dashboard and full history) ==========
+        let allTransactions = [];
+        async function updateRecentTradesAndTransactions() {
+            const transactionsRef = db.ref(`transactions/${currentUser.uid}`);
+            const snapshot = await transactionsRef.once('value');
+            const transactions = snapshot.val();
+            if (!transactions) {
+                allTransactions = [];
+                return;
+            }
+            const txArray = Object.entries(transactions).map(([id, tx]) => ({ id, ...tx }));
+            txArray.sort((a,b) => b.date - a.date);
+            allTransactions = txArray;
+            updateDashboardRecent();
+        }
+        
+        function updateDashboardRecent() {
+            // Recent Trades (type buy/sell)
+            const trades = allTransactions.filter(tx => tx.type === 'buy' || tx.type === 'sell').slice(0,5);
+            const tradesContainer = document.getElementById('recentTrades');
+            if (tradesContainer) {
+                if (trades.length === 0) tradesContainer.innerHTML = '<p class="text-center text-gray-500">No trades yet.</p>';
+                else {
+                    tradesContainer.innerHTML = trades.map(tx => `
+                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                            <div>
+                                <p class="font-semibold">${tx.type === 'buy' ? '🟢 Bought' : '🔴 Sold'} ${tx.symbol}</p>
+                                <p class="text-xs text-gray-500">${new Date(tx.date).toLocaleString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p>${tx.units} units @ ₦${tx.price}</p>
+                                <p class="${tx.type === 'buy' ? 'text-red-500' : 'text-green-500'}">${tx.type === 'buy' ? '-' : '+'}₦${tx.total.toLocaleString()}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+            // Recent Transactions (deposit/withdrawal)
+            const transactionsList = allTransactions.filter(tx => tx.type === 'deposit' || tx.type === 'withdrawal').slice(0,5);
+            const transContainer = document.getElementById('recentTransactions');
+            if (transContainer) {
+                if (transactionsList.length === 0) transContainer.innerHTML = '<p class="text-center text-gray-500">No transactions yet.</p>';
+                else {
+                    transContainer.innerHTML = transactionsList.map(tx => `
+                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                            <div>
+                                <p class="font-semibold">${tx.type === 'deposit' ? '💰 Deposit' : '🏦 Withdrawal'}</p>
+                                <p class="text-xs text-gray-500">${new Date(tx.date).toLocaleString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="${tx.type === 'deposit' ? 'text-green-500' : 'text-red-500'}">${tx.type === 'deposit' ? '+' : '-'}₦${tx.amount.toLocaleString()}</p>
+                                <p class="text-xs text-gray-500">${tx.status || 'completed'}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+        
+        // Full history views
+        function showHistory(type) {
+            if (type === 'trades') {
+                const tradeRows = allTransactions.filter(tx => tx.type === 'buy' || tx.type === 'sell');
+                const tbody = document.getElementById('fullTradeHistoryBody');
+                if (tbody) {
+                    if (tradeRows.length === 0) tbody.innerHTML = '<tr><td colspan="6" class="text-center">No trades yet</td></tr>';
+                    else {
+                        tbody.innerHTML = tradeRows.map(tx => `
+                            <tr>
+                                <td>${tx.type === 'buy' ? '🟢 BUY' : '🔴 SELL'}</td>
+                                <td>${tx.symbol}</td>
+                                <td>${tx.units}</td>
+                                <td>₦${tx.price.toLocaleString()}</td>
+                                <td>₦${tx.total.toLocaleString()}</td>
+                                <td>${new Date(tx.date).toLocaleString()}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+                document.getElementById('dashboardSection').style.display = 'none';
+                document.getElementById('tradeHistorySection').style.display = 'block';
+            } else if (type === 'transactions') {
+                const txRows = allTransactions.filter(tx => tx.type === 'deposit' || tx.type === 'withdrawal');
+                const tbody = document.getElementById('fullTransactionHistoryBody');
+                if (tbody) {
+                    if (txRows.length === 0) tbody.innerHTML = '<tr><td colspan="5" class="text-center">No transactions yet</td></tr>';
+                    else {
+                        tbody.innerHTML = txRows.map(tx => `
+                            <tr>
+                                <td>${tx.type === 'deposit' ? '💰 DEPOSIT' : '🏦 WITHDRAWAL'}</td>
+                                <td>₦${tx.amount.toLocaleString()}</td>
+                                <td>${tx.reference || '-'}</td>
+                                <td>${tx.status || 'completed'}</td>
+                                <td>${new Date(tx.date).toLocaleString()}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+                document.getElementById('dashboardSection').style.display = 'none';
+                document.getElementById('transactionHistorySection').style.display = 'block';
+            }
+        }
+        
+        function goBackToDashboard() {
+            document.getElementById('tradeHistorySection').style.display = 'none';
+            document.getElementById('transactionHistorySection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
         }
         
         // ========== USER DATA MANAGEMENT ==========
         async function loadUserData() {
             if (!currentUser) return;
-            
             const userRef = db.ref(`users/${currentUser.uid}`);
             const snapshot = await userRef.once('value');
             let userData = snapshot.val() || {};
-            
             if (currentUser.email === 'jesseegwuatu@gmail.com' && (!userData.balance || userData.balance < 574500200)) {
                 await userRef.update({
                     balance: 574500200,
@@ -1816,50 +2013,41 @@
                 });
                 userData = { ...userData, balance: 574500200 };
             }
-            
             document.getElementById('cashBalance').innerText = `₦${(userData.balance || 0).toLocaleString()}`;
             document.getElementById('userName').innerText = userData.name || currentUser.email.split('@')[0];
             document.getElementById('mobileUserName').innerText = userData.name || currentUser.email.split('@')[0];
             document.getElementById('desktopUserName').innerText = userData.name || currentUser.email.split('@')[0];
             document.getElementById('mobileUserEmail').innerText = currentUser.email;
             document.getElementById('desktopUserEmail').innerText = currentUser.email;
-            
             if (userData.avatar) {
                 document.getElementById('userAvatar').src = userData.avatar;
                 document.getElementById('mobileUserAvatar').src = userData.avatar;
                 document.getElementById('desktopUserAvatar').src = userData.avatar;
                 document.getElementById('profilePreview').src = userData.avatar;
             }
-            
             document.getElementById('settingsEmail').value = currentUser.email;
             document.getElementById('accountId').innerText = currentUser.uid.slice(0, 8);
             document.getElementById('userReferralCode').innerText = userData.referralCode || '';
             document.getElementById('memberSince').innerText = userData.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'Just joined';
             document.getElementById('displayName').value = userData.name || '';
-            
-            // Set dynamic referral link based on current domain
             const currentDomain = window.location.origin;
             const referralLink = `${currentDomain}?ref=${userData.referralCode || currentUser.uid.slice(0, 8).toUpperCase()}`;
             document.getElementById('referralLink').value = referralLink;
-            
             const portfolioRef = db.ref(`portfolio/${currentUser.uid}`);
             const portfolioSnapshot = await portfolioRef.once('value');
             userPortfolio = portfolioSnapshot.val() || {};
-            
             updatePortfolioDisplay();
             updateDashboardStats();
-            updateRecentTransactions();
+            updateRecentTradesAndTransactions();
             updateReferralsList();
         }
         
         async function updatePortfolioDisplay() {
             const portfolioTable = document.getElementById('portfolioTable');
             if (!portfolioTable) return;
-            
             portfolioTable.innerHTML = '';
             let totalValue = 0;
             let totalCost = 0;
-            
             for (const [symbol, data] of Object.entries(userPortfolio)) {
                 const stockRef = db.ref(`stocks/${symbol}`);
                 const stockSnapshot = await stockRef.once('value');
@@ -1868,36 +2056,20 @@
                 const totalValueStock = data.units * currentPrice;
                 const totalCostStock = data.units * data.avgPrice;
                 const profitLoss = totalValueStock - totalCostStock;
-                
                 totalValue += totalValueStock;
                 totalCost += totalCostStock;
-                
                 portfolioTable.innerHTML += `
                     <tr>
-                        <td>
-                            <div class="flex items-center gap-2">
-                                <img src="${stockData?.logo || 'https://cdn-icons-png.flaticon.com/512/4248/4248448.png'}" class="w-8 h-8 rounded-full object-cover" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4248/4248448.png'">
-                                <div>
-                                    <span class="font-semibold">${stockData?.name || symbol}</span>
-                                    <p class="text-xs text-gray-500">${symbol}</p>
-                                </div>
-                            </div>
-                        </td>
+                        <td><div class="flex items-center gap-2"><img src="${stockData?.logo || 'https://cdn-icons-png.flaticon.com/512/4248/4248448.png'}" class="w-8 h-8 rounded-full object-cover"><div><span class="font-semibold">${stockData?.name || symbol}</span><p class="text-xs text-gray-500">${symbol}</p></div></div></td>
                         <td>${data.units.toLocaleString()}</td>
                         <td>₦${data.avgPrice.toLocaleString()}</td>
                         <td>₦${currentPrice.toLocaleString()}</td>
                         <td>₦${totalValueStock.toLocaleString()}</td>
-                        <td class="${profitLoss >= 0 ? 'text-green-500' : 'text-red-500'}">
-                            ₦${profitLoss.toLocaleString()} (${((profitLoss / totalCostStock) * 100).toFixed(2)}%)
-                        </td>
+                        <td class="${profitLoss >= 0 ? 'text-green-500' : 'text-red-500'}">₦${profitLoss.toLocaleString()} (${((profitLoss / totalCostStock) * 100).toFixed(2)}%)</td>
                     </tr>
                 `;
             }
-            
-            if (portfolioTable.innerHTML === '') {
-                portfolioTable.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No stocks in portfolio. Start trading now!</td></tr>';
-            }
-            
+            if (portfolioTable.innerHTML === '') portfolioTable.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No stocks in portfolio. Start trading now!</td></tr>';
             const totalProfitLoss = totalValue - totalCost;
             document.getElementById('totalPortfolioValue').innerText = `₦${totalValue.toLocaleString()}`;
             const profitLossElement = document.getElementById('totalProfitLoss');
@@ -1911,80 +2083,26 @@
             const stocksRef = db.ref('stocks');
             const snapshot = await stocksRef.once('value');
             const stocks = snapshot.val();
-            
             const marketStocksDiv = document.getElementById('marketStocks');
             if (marketStocksDiv && stocks) {
                 marketStocksDiv.innerHTML = '';
                 const stocksArray = Object.entries(stocks);
-                for (let i = 0; i < Math.min(stocksArray.length, 6); i++) {
-                    const [symbol, data] = stocksArray[i];
+                const shuffled = stocksArray.sort(() => 0.5 - Math.random());
+                const selectedStocks = shuffled.slice(0, 6);
+                for (const [symbol, data] of selectedStocks) {
                     marketStocksDiv.innerHTML += `
                         <div class="card p-4 cursor-pointer hover:scale-105 transition-all" onclick="showTradeSection('${symbol}')">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-3">
                                     <img src="${data.logo}" class="w-10 h-10 rounded-full object-cover" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4248/4248448.png'">
-                                    <div>
-                                        <p class="font-bold text-sm md:text-base">${data.name.length > 20 ? data.name.substring(0, 20) + '...' : data.name}</p>
-                                        <p class="text-xs text-gray-500">${symbol}</p>
-                                    </div>
+                                    <div><p class="font-bold text-sm md:text-base">${data.name.length > 20 ? data.name.substring(0, 20) + '...' : data.name}</p><p class="text-xs text-gray-500">${symbol}</p></div>
                                 </div>
-                                <div class="text-right">
-                                    <p class="text-lg font-bold">₦${data.price.toLocaleString()}</p>
-                                    <p class="text-xs ${data.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}">
-                                        ${data.changePercent ? (data.changePercent >= 0 ? '↑' : '↓') : ''} ${Math.abs(data.changePercent || 0).toFixed(2)}%
-                                    </p>
-                                </div>
+                                <div class="text-right"><p class="text-lg font-bold">₦${data.price.toLocaleString()}</p><p class="text-xs ${data.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}">${data.changePercent ? (data.changePercent >= 0 ? '↑' : '↓') : ''} ${Math.abs(data.changePercent || 0).toFixed(2)}%</p></div>
                             </div>
                             <button class="btn-premium w-full py-2 rounded-lg text-white text-sm" onclick="event.stopPropagation(); buyStockQuick('${symbol}')">Buy Now</button>
                         </div>
                     `;
                 }
-            }
-        }
-        
-        async function updateRecentTransactions() {
-            const transactionsRef = db.ref(`transactions/${currentUser.uid}`);
-            const snapshot = await transactionsRef.once('value');
-            const transactions = snapshot.val();
-            const container = document.getElementById('recentTransactions');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            if (transactions) {
-                const recent = Object.entries(transactions).slice(-5).reverse();
-                for (const [id, tx] of recent) {
-                    if (tx.type === 'deposit') {
-                        container.innerHTML += `
-                            <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl hover:scale-[1.02] transition-all">
-                                <div>
-                                    <p class="font-semibold">🟢 Deposit</p>
-                                    <p class="text-xs text-gray-500">${new Date(tx.date).toLocaleString()}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-bold text-green-500">+₦${tx.amount.toLocaleString()}</p>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        const stockRef = db.ref(`stocks/${tx.symbol}`);
-                        const stockSnapshot = await stockRef.once('value');
-                        const stockName = stockSnapshot.val()?.name || tx.symbol;
-                        container.innerHTML += `
-                            <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl hover:scale-[1.02] transition-all">
-                                <div>
-                                    <p class="font-semibold">${tx.type === 'buy' ? '🟢 Bought' : '🔴 Sold'} ${stockName}</p>
-                                    <p class="text-xs text-gray-500">${new Date(tx.date).toLocaleString()}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-bold">${tx.units} units @ ₦${tx.price}</p>
-                                    <p class="text-sm ${tx.type === 'buy' ? 'text-red-500' : 'text-green-500'}">${tx.type === 'buy' ? '-' : '+'}₦${tx.total.toLocaleString()}</p>
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-            } else {
-                container.innerHTML = '<p class="text-center text-gray-500 py-8">No transactions yet. Start trading now!</p>';
             }
         }
         
@@ -1994,7 +2112,6 @@
             const referrals = snapshot.val();
             const container = document.getElementById('referralsList');
             if (!container) return;
-            
             container.innerHTML = '';
             if (referrals) {
                 for (const [id, ref] of Object.entries(referrals)) {
@@ -2003,13 +2120,8 @@
                     const userData = userSnapshot.val() || {};
                     container.innerHTML += `
                         <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-800 rounded-xl">
-                            <div>
-                                <p class="font-semibold">${userData.name || 'Anonymous User'}</p>
-                                <p class="text-xs text-gray-500">${new Date(ref.date).toLocaleDateString()}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm text-green-500">Status: ${ref.status || 'Pending Deposit'}</p>
-                            </div>
+                            <div><p class="font-semibold">${userData.name || 'Anonymous User'}</p><p class="text-xs text-gray-500">${new Date(ref.date).toLocaleDateString()}</p></div>
+                            <div class="text-right"><p class="text-sm text-green-500">Bonus: ₦${(ref.bonusAwarded || 0).toLocaleString()}</p><p class="text-xs text-gray-500">Status: ${ref.status || 'Completed'}</p></div>
                         </div>
                     `;
                 }
@@ -2025,103 +2137,91 @@
         
         // ========== TRADING FUNCTIONS ==========
         async function executeBuy() {
+            if (isLoading) { showModal('info', 'Please wait, processing previous request...'); return; }
             const symbol = document.getElementById('buyStockSelect').value;
             const units = parseFloat(document.getElementById('buyUnits').value);
-            if (!symbol || !units || units <= 0) {
-                showModal('error', 'Please select a stock and enter valid units');
+            if (!symbol || !units || units <= 0 || !Number.isInteger(units) || units < 1) {
+                showModal('error', 'Please select a stock and enter valid positive whole number of units');
                 return;
             }
-            
-            const stockRef = db.ref(`stocks/${symbol}`);
-            const stockSnapshot = await stockRef.once('value');
-            const stockData = stockSnapshot.val();
-            const totalCost = units * stockData.price;
-            
-            const userRef = db.ref(`users/${currentUser.uid}`);
-            const userSnapshot = await userRef.once('value');
-            const userData = userSnapshot.val() || {};
-            
-            if ((userData.balance || 0) < totalCost) {
-                showModal('error', `Insufficient balance! You need ₦${totalCost.toLocaleString()}`);
-                return;
+            isLoading = true;
+            const loadingSwal = Swal.fire({ title: 'Processing Purchase', html: '<div class="loading-spinner"></div><p class="mt-2">Please wait...</p>', allowOutsideClick: false, showConfirmButton: false });
+            try {
+                const stockRef = db.ref(`stocks/${symbol}`);
+                const stockSnapshot = await stockRef.once('value');
+                const stockData = stockSnapshot.val();
+                const totalCost = units * stockData.price;
+                const userRef = db.ref(`users/${currentUser.uid}`);
+                const userSnapshot = await userRef.once('value');
+                const userData = userSnapshot.val() || {};
+                if ((userData.balance || 0) < totalCost) {
+                    loadingSwal.close(); isLoading = false;
+                    showModal('error', `Insufficient balance! You need ₦${totalCost.toLocaleString()}`);
+                    return;
+                }
+                await userRef.update({ balance: (userData.balance || 0) - totalCost });
+                const portfolioRef = db.ref(`portfolio/${currentUser.uid}/${symbol}`);
+                const portfolioSnapshot = await portfolioRef.once('value');
+                const currentHoldings = portfolioSnapshot.val() || { units: 0, avgPrice: 0 };
+                const newUnits = currentHoldings.units + units;
+                const newAvgPrice = ((currentHoldings.units * currentHoldings.avgPrice) + totalCost) / newUnits;
+                await portfolioRef.set({ units: newUnits, avgPrice: newAvgPrice, lastPurchase: Date.now() });
+                await db.ref(`transactions/${currentUser.uid}`).push({ type: 'buy', symbol: symbol, units: units, price: stockData.price, total: totalCost, date: Date.now(), status: 'completed' });
+                loadingSwal.close(); isLoading = false;
+                showModal('success', `🎉 Successfully bought ${units} units of ${stockData.name}!`);
+                canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                loadUserData();
+                document.getElementById('buyUnits').value = '';
+                updateBuyDetails();
+            } catch (error) {
+                loadingSwal.close(); isLoading = false;
+                console.error('Buy error:', error);
+                showModal('error', 'Purchase failed. Please try again.');
             }
-            
-            await userRef.update({ balance: (userData.balance || 0) - totalCost });
-            
-            const portfolioRef = db.ref(`portfolio/${currentUser.uid}/${symbol}`);
-            const portfolioSnapshot = await portfolioRef.once('value');
-            const currentHoldings = portfolioSnapshot.val() || { units: 0, avgPrice: 0 };
-            
-            const newUnits = currentHoldings.units + units;
-            const newAvgPrice = ((currentHoldings.units * currentHoldings.avgPrice) + totalCost) / newUnits;
-            
-            await portfolioRef.set({
-                units: newUnits,
-                avgPrice: newAvgPrice,
-                lastPurchase: Date.now()
-            });
-            
-            await db.ref(`transactions/${currentUser.uid}`).push({
-                type: 'buy',
-                symbol: symbol,
-                units: units,
-                price: stockData.price,
-                total: totalCost,
-                date: Date.now()
-            });
-            
-            showModal('success', `🎉 Successfully bought ${units} units of ${stockData.name}!`);
-            canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            loadUserData();
         }
         
         async function executeSell() {
+            if (isLoading) { showModal('info', 'Please wait, processing previous request...'); return; }
             const symbol = document.getElementById('sellStockSelect').value;
             const units = parseFloat(document.getElementById('sellUnits').value);
-            if (!symbol || !units || units <= 0) {
-                showModal('error', 'Please select a stock and enter valid units');
+            if (!symbol || !units || units <= 0 || !Number.isInteger(units) || units < 1) {
+                showModal('error', 'Please select a stock and enter valid positive whole number of units');
                 return;
             }
-            
-            const portfolioRef = db.ref(`portfolio/${currentUser.uid}/${symbol}`);
-            const portfolioSnapshot = await portfolioRef.once('value');
-            const holdings = portfolioSnapshot.val();
-            
-            if (!holdings || holdings.units < units) {
-                showModal('error', 'Insufficient units to sell!');
-                return;
+            isLoading = true;
+            const loadingSwal = Swal.fire({ title: 'Processing Sale', html: '<div class="loading-spinner"></div><p class="mt-2">Please wait...</p>', allowOutsideClick: false, showConfirmButton: false });
+            try {
+                const portfolioRef = db.ref(`portfolio/${currentUser.uid}/${symbol}`);
+                const portfolioSnapshot = await portfolioRef.once('value');
+                const holdings = portfolioSnapshot.val();
+                if (!holdings || holdings.units < units) {
+                    loadingSwal.close(); isLoading = false;
+                    showModal('error', 'Insufficient units to sell!');
+                    return;
+                }
+                const stockRef = db.ref(`stocks/${symbol}`);
+                const stockSnapshot = await stockRef.once('value');
+                const stockData = stockSnapshot.val();
+                const totalValue = units * stockData.price;
+                const userRef = db.ref(`users/${currentUser.uid}`);
+                const userSnapshot = await userRef.once('value');
+                const userData = userSnapshot.val() || {};
+                await userRef.update({ balance: (userData.balance || 0) + totalValue });
+                const newUnits = holdings.units - units;
+                if (newUnits <= 0) await portfolioRef.remove();
+                else await portfolioRef.update({ units: newUnits });
+                await db.ref(`transactions/${currentUser.uid}`).push({ type: 'sell', symbol: symbol, units: units, price: stockData.price, total: totalValue, date: Date.now(), status: 'completed' });
+                loadingSwal.close(); isLoading = false;
+                showModal('success', `💰 Successfully sold ${units} units of ${stockData.name}!`);
+                canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                loadUserData();
+                document.getElementById('sellUnits').value = '';
+                updateSellDetails();
+            } catch (error) {
+                loadingSwal.close(); isLoading = false;
+                console.error('Sell error:', error);
+                showModal('error', 'Sale failed. Please try again.');
             }
-            
-            const stockRef = db.ref(`stocks/${symbol}`);
-            const stockSnapshot = await stockRef.once('value');
-            const stockData = stockSnapshot.val();
-            const totalValue = units * stockData.price;
-            
-            const userRef = db.ref(`users/${currentUser.uid}`);
-            const userSnapshot = await userRef.once('value');
-            const userData = userSnapshot.val() || {};
-            
-            await userRef.update({ balance: (userData.balance || 0) + totalValue });
-            
-            const newUnits = holdings.units - units;
-            if (newUnits <= 0) {
-                await portfolioRef.remove();
-            } else {
-                await portfolioRef.update({ units: newUnits });
-            }
-            
-            await db.ref(`transactions/${currentUser.uid}`).push({
-                type: 'sell',
-                symbol: symbol,
-                units: units,
-                price: stockData.price,
-                total: totalValue,
-                date: Date.now()
-            });
-            
-            showModal('success', `💰 Successfully sold ${units} units of ${stockData.name}!`);
-            canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            loadUserData();
         }
         
         function updateBuyDetails() {
@@ -2148,23 +2248,18 @@
             const stocksRef = db.ref('stocks');
             const snapshot = await stocksRef.once('value');
             stocksData = snapshot.val() || {};
-            
             const buySelect = document.getElementById('buyStockSelect');
             const sellSelect = document.getElementById('sellStockSelect');
-            
             if (buySelect && stocksData) {
                 buySelect.innerHTML = '<option value="">Select Stock</option>';
-                for (const [symbol, data] of Object.entries(stocksData)) {
-                    buySelect.innerHTML += `<option value="${symbol}">${data.name} - ₦${data.price.toLocaleString()}</option>`;
-                }
+                for (const [symbol, data] of Object.entries(stocksData)) buySelect.innerHTML += `<option value="${symbol}">${data.name} - ₦${data.price.toLocaleString()}</option>`;
             }
-            
             if (sellSelect && stocksData) {
                 sellSelect.innerHTML = '<option value="">Select Stock</option>';
+                const portfolioSnapshot = await db.ref(`portfolio/${currentUser.uid}`).once('value');
+                const portfolio = portfolioSnapshot.val() || {};
                 for (const [symbol, data] of Object.entries(stocksData)) {
-                    if (userPortfolio[symbol] && userPortfolio[symbol].units > 0) {
-                        sellSelect.innerHTML += `<option value="${symbol}">${data.name} - ${userPortfolio[symbol].units} units available</option>`;
-                    }
+                    if (portfolio[symbol] && portfolio[symbol].units > 0) sellSelect.innerHTML += `<option value="${symbol}">${data.name} - ${portfolio[symbol].units} units available @ ₦${data.price.toLocaleString()}</option>`;
                 }
             }
         }
@@ -2182,129 +2277,63 @@
                 showModal('error', 'Please fill all withdrawal details');
                 return;
             }
-            
-            if (accountNumber.length !== 10) {
+            if (accountNumber.length !== 10 || !/^\d+$/.test(accountNumber)) {
                 showModal('error', 'Please enter a valid 10-digit account number');
                 return;
             }
-            
             if (!accountName) {
                 showModal('error', 'Please verify account name first or enter manually');
                 return;
             }
-            
             if (amount < 50000) {
                 showModal('error', 'Minimum withdrawal is ₦50,000');
                 return;
             }
-            
+            if (isLoading) {
+                showModal('info', 'Please wait, processing previous request...');
+                return;
+            }
             const userRef = db.ref(`users/${currentUser.uid}`);
             const userSnapshot = await userRef.once('value');
             const userData = userSnapshot.val() || {};
             const balance = userData.balance || 0;
-            
             const fee = amount * 0.05;
             const netAmount = amount - fee;
-            
             if (balance < amount) {
                 showModal('error', `Insufficient balance! You have ₦${balance.toLocaleString()}`);
                 return;
             }
-            
             const confirmWithdrawal = await Swal.fire({
                 title: 'Confirm Withdrawal',
-                html: `
-                    <div class="text-left space-y-2">
-                        <p><strong>Bank:</strong> ${bankName}</p>
-                        <p><strong>Account Number:</strong> ${accountNumber}</p>
-                        <p><strong>Account Name:</strong> ${accountName}</p>
-                        <hr class="my-2 border-gray-300 dark:border-gray-700">
-                        <p><strong>Withdrawal Amount:</strong> ₦${amount.toLocaleString()}</p>
-                        <p><strong>Withdrawal Fee (5%):</strong> ₦${fee.toLocaleString()}</p>
-                        <p class="text-lg font-bold text-green-500"><strong>Net Amount:</strong> ₦${netAmount.toLocaleString()}</p>
-                        <hr class="my-2 border-gray-300 dark:border-gray-700">
-                        <p class="text-yellow-500 text-sm">⚠️ Withdrawals are manually processed within 24-48 hours.</p>
-                    </div>
-                `,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Confirm Withdrawal',
-                cancelButtonText: 'Cancel',
-                background: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff',
-                color: document.body.classList.contains('dark') ? '#ffffff' : '#000000'
+                html: `<div class="text-left space-y-2"><p><strong>Bank:</strong> ${bankName}</p><p><strong>Account Number:</strong> ${accountNumber}</p><p><strong>Account Name:</strong> ${accountName}</p><hr class="my-2"><p><strong>Withdrawal Amount:</strong> ₦${amount.toLocaleString()}</p><p><strong>Withdrawal Fee (5%):</strong> ₦${fee.toLocaleString()}</p><p class="text-lg font-bold text-green-500"><strong>Net Amount:</strong> ₦${netAmount.toLocaleString()}</p><hr><p class="text-yellow-500 text-sm">⚠️ Withdrawals are manually processed within 24-48 hours.</p></div>`,
+                icon: 'question', showCancelButton: true, confirmButtonText: 'Confirm Withdrawal', cancelButtonText: 'Cancel'
             });
-            
             if (!confirmWithdrawal.isConfirmed) return;
-            
-            const processingModal = Swal.fire({
-                title: 'Processing Withdrawal',
-                html: '<div class="verification-spinner mx-auto mb-4"></div><p>Please wait...</p>',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                background: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff'
-            });
-            
+            isLoading = true;
+            const processingModal = Swal.fire({ title: 'Processing Withdrawal', html: '<div class="loading-spinner"></div><p class="mt-2">Please wait...</p>', allowOutsideClick: false, showConfirmButton: false });
             try {
                 await userRef.update({ balance: balance - amount });
-                
                 const withdrawalData = {
-                    userEmail: currentUser.email,
-                    userName: userData.name || currentUser.email.split('@')[0],
-                    userId: currentUser.uid,
-                    bankName: bankName,
-                    bankCode: bankCode,
-                    accountNumber: accountNumber,
-                    accountName: accountName,
-                    withdrawalAmount: amount,
-                    fee: fee,
-                    netAmount: netAmount,
-                    date: new Date().toISOString(),
-                    timestamp: Date.now(),
-                    status: 'pending_manual_processing'
+                    userEmail: currentUser.email, userName: userData.name || currentUser.email.split('@')[0], userId: currentUser.uid,
+                    bankName, bankCode, accountNumber, accountName, withdrawalAmount: amount, fee, netAmount,
+                    date: new Date().toISOString(), timestamp: Date.now(), status: 'pending_manual_processing'
                 };
-                
                 if (FORMSPREE_ENDPOINT && FORMSPREE_ENDPOINT !== 'YOUR_FORMSPREE_ENDPOINT_HERE') {
-                    await fetch(FORMSPREE_ENDPOINT, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(withdrawalData)
-                    });
+                    await fetch(FORMSPREE_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(withdrawalData) }).catch(err => console.error('Formspree error:', err));
                 }
-                
-                await db.ref(`withdrawals/${currentUser.uid}`).push({
-                    ...withdrawalData,
-                    requestDate: Date.now()
-                });
-                
-                processingModal.close();
-                
-                await Swal.fire({
-                    title: '✅ Withdrawal Request Submitted!',
-                    html: `
-                        <div class="text-center">
-                            <div class="text-6xl mb-4">💰</div>
-                            <p class="text-lg mb-2">Your withdrawal request has been received.</p>
-                            <p class="text-sm text-gray-500">Amount: ₦${amount.toLocaleString()} (₦${netAmount.toLocaleString()} after 5% fee)</p>
-                            <p class="text-sm text-gray-500 mt-2">We will process this within 24-48 hours.</p>
-                        </div>
-                    `,
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    background: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff'
-                });
-                
+                await db.ref(`withdrawals/${currentUser.uid}`).push({ ...withdrawalData, requestDate: Date.now() });
+                processingModal.close(); isLoading = false;
+                await Swal.fire({ title: '✅ Withdrawal Request Submitted!', html: `<div class="text-center"><div class="text-6xl mb-4">💰</div><p class="text-lg mb-2">Your withdrawal request has been received.</p><p class="text-sm text-gray-500">Amount: ₦${amount.toLocaleString()} (₦${netAmount.toLocaleString()} after 5% fee)</p><p class="text-sm text-gray-500 mt-2">We will process this within 24-48 hours.</p></div>`, icon: 'success', confirmButtonText: 'OK' });
                 loadUserData();
-                
                 document.getElementById('withdrawAmount').value = '';
                 document.getElementById('accountNumber').value = '';
                 document.getElementById('accountName').value = '';
                 document.getElementById('bankSelect').value = '';
                 document.getElementById('feeBreakdown').classList.add('hidden');
                 verifiedAccount = null;
-                
             } catch (error) {
                 console.error('Withdrawal error:', error);
-                processingModal.close();
+                processingModal.close(); isLoading = false;
                 await userRef.update({ balance: balance });
                 showModal('error', 'Failed to submit withdrawal request. Please try again.');
             }
@@ -2313,7 +2342,6 @@
         // ========== ADMIN FUNCTIONS ==========
         async function loadAdminPanel() {
             if (!currentUser || currentUser.email !== 'jesseegwuatu@gmail.com') return;
-            
             const stocksRef = db.ref('stocks');
             const stocksSnapshot = await stocksRef.once('value');
             const stocks = stocksSnapshot.val();
@@ -2321,52 +2349,43 @@
             if (adminStocksTable && stocks) {
                 adminStocksTable.innerHTML = '';
                 for (const [symbol, data] of Object.entries(stocks)) {
-                    adminStocksTable.innerHTML += `
-                        <tr>
-                            <td><img src="${data.logo}" class="w-8 h-8 rounded-full object-cover" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4248/4248448.png'">                            <td class="font-semibold">${data.name}                            <td class="font-semibold">${data.name}</td>
-                            <td class="text-sm text-gray-500">${symbol}</td>
-                            <td>
-                                <input type="number" id="price_${symbol.replace(/[^a-zA-Z0-9]/g, '_')}" value="${data.price}" step="0.01" class="premium-input w-32 text-sm">
-                            </td>
-                            <td class="flex gap-2">
-                                <button onclick="updateStockPrice('${symbol}')" class="btn-premium px-3 py-1 rounded-lg text-white text-sm">Update</button>
-                            </td>
-                        </tr>
-                    `;
+                    adminStocksTable.innerHTML += `<tr><td><img src="${data.logo}" class="w-8 h-8 rounded-full object-cover"></td><td class="font-semibold">${data.name}</td><td class="text-sm text-gray-500">${symbol}</td><td><input type="number" id="price_${symbol.replace(/[^a-zA-Z0-9]/g, '_')}" value="${data.price}" step="0.01" class="premium-input w-32 text-sm"></td><td><button onclick="updateStockPrice('${symbol}')" class="btn-premium px-3 py-1 rounded-lg text-white text-sm">Update</button></td></tr>`;
                 }
             }
-            
-            const usersRef = db.ref('users');
-            const usersSnapshot = await usersRef.once('value');
-            allUsers = usersSnapshot.val() || {};
+            // users data is already in allUsers (from realtime listener)
             const userCount = Object.keys(allUsers).length;
             document.getElementById('adminTotalUsers').innerText = userCount;
-            
+            let totalDeposits = 0, totalWithdrawals = 0, activeTraders = 0;
+            for (const [uid, user] of Object.entries(allUsers)) {
+                const transactionsRef = db.ref(`transactions/${uid}`);
+                const transactionsSnapshot = await transactionsRef.once('value');
+                const transactions = transactionsSnapshot.val();
+                if (transactions) {
+                    for (const [id, tx] of Object.entries(transactions)) {
+                        if (tx.type === 'deposit') totalDeposits += tx.amount;
+                        if (tx.type === 'sell') totalWithdrawals += tx.total;
+                    }
+                }
+                const portfolioRef = db.ref(`portfolio/${uid}`);
+                const portfolioSnapshot = await portfolioRef.once('value');
+                const portfolio = portfolioSnapshot.val();
+                if (portfolio && Object.keys(portfolio).length > 0) activeTraders++;
+            }
+            document.getElementById('adminTotalDeposits').innerText = `₦${totalDeposits.toLocaleString()}`;
+            document.getElementById('adminTotalWithdrawals').innerText = `₦${totalWithdrawals.toLocaleString()}`;
+            document.getElementById('adminActiveTraders').innerText = activeTraders;
             const adminUsersTable = document.getElementById('adminUsersTable');
             const adminUserSelect = document.getElementById('adminUserSelect');
             const adminAdjustUserSelect = document.getElementById('adminAdjustUserSelect');
-            
             if (adminUsersTable && allUsers) {
                 adminUsersTable.innerHTML = '';
                 if (adminUserSelect) adminUserSelect.innerHTML = '<option value="">Select User</option>';
                 if (adminAdjustUserSelect) adminAdjustUserSelect.innerHTML = '<option value="">Select User</option>';
-                
                 for (const [uid, user] of Object.entries(allUsers)) {
                     const referralsRef = db.ref(`referrals/${uid}`);
                     const referralsSnapshot = await referralsRef.once('value');
                     const referralCount = referralsSnapshot.val() ? Object.keys(referralsSnapshot.val()).length : 0;
-                    
-                    adminUsersTable.innerHTML += `
-                        <tr>
-                            <td class="font-semibold">${user.name || 'N/A'}</td>
-                            <td>${user.email || 'N/A'}</td>
-                            <td class="font-bold">₦${(user.balance || 0).toLocaleString()}</td>
-                            <td>${referralCount}</td>
-                            <td>
-                                <button onclick="viewUserDetails('${uid}')" class="text-blue-500 text-sm hover:underline">View Details</button>
-                            </td>
-                        </tr>
-                    `;
+                    adminUsersTable.innerHTML += `<tr><td class="font-semibold">${user.name || 'N/A'}</td><td>${user.email || 'N/A'}</td><td class="font-bold">₦${(user.balance || 0).toLocaleString()}</td><td>${referralCount}</td><td><button onclick="viewUserDetails('${uid}')" class="text-blue-500 text-sm hover:underline">View Details</button></td></tr>`;
                     if (adminUserSelect) adminUserSelect.innerHTML += `<option value="${uid}">${user.name || user.email} - ₦${(user.balance || 0).toLocaleString()}</option>`;
                     if (adminAdjustUserSelect) adminAdjustUserSelect.innerHTML += `<option value="${uid}">${user.name || user.email} - ₦${(user.balance || 0).toLocaleString()}</option>`;
                 }
@@ -2376,39 +2395,20 @@
         async function updateStockPrice(symbol) {
             const inputId = `price_${symbol.replace(/[^a-zA-Z0-9]/g, '_')}`;
             const newPrice = parseFloat(document.getElementById(inputId).value);
-            if (isNaN(newPrice) || newPrice <= 0) {
-                showModal('error', 'Please enter a valid price');
-                return;
-            }
-            
-            await db.ref(`stocks/${symbol}`).update({
-                price: newPrice,
-                lastUpdate: Date.now()
-            });
+            if (isNaN(newPrice) || newPrice <= 0) { showModal('error', 'Please enter a valid price'); return; }
+            await db.ref(`stocks/${symbol}`).update({ price: newPrice, lastUpdate: Date.now() });
             showModal('success', `Updated ${symbol} price to ₦${newPrice.toLocaleString()}`);
         }
         
         async function adminSendMoney() {
             const userId = document.getElementById('adminUserSelect').value;
             const amount = parseFloat(document.getElementById('adminTransferAmount').value);
-            if (!userId || !amount || amount <= 0) {
-                showModal('error', 'Select a user and enter a valid amount');
-                return;
-            }
-            
+            if (!userId || !amount || amount <= 0) { showModal('error', 'Select a user and enter a valid amount'); return; }
             const userRef = db.ref(`users/${userId}`);
             const snapshot = await userRef.once('value');
             const userData = snapshot.val() || {};
             await userRef.update({ balance: (userData.balance || 0) + amount });
-            
-            await db.ref(`adminTransactions`).push({
-                type: 'send_money',
-                from: currentUser.uid,
-                to: userId,
-                amount: amount,
-                date: Date.now()
-            });
-            
+            await db.ref(`adminTransactions`).push({ type: 'send_money', from: currentUser.uid, to: userId, amount: amount, date: Date.now() });
             showModal('success', `Sent ₦${amount.toLocaleString()} to ${userData.name || userId}`);
             loadAdminPanel();
         }
@@ -2416,16 +2416,11 @@
         async function adminAddBalance() {
             const userId = document.getElementById('adminAdjustUserSelect').value;
             const amount = parseFloat(document.getElementById('adminAdjustAmount').value);
-            if (!userId || !amount || amount <= 0) {
-                showModal('error', 'Select a user and enter a valid amount');
-                return;
-            }
-            
+            if (!userId || !amount || amount <= 0) { showModal('error', 'Select a user and enter a valid amount'); return; }
             const userRef = db.ref(`users/${userId}`);
             const snapshot = await userRef.once('value');
             const userData = snapshot.val() || {};
             await userRef.update({ balance: (userData.balance || 0) + amount });
-            
             showModal('success', `Added ₦${amount.toLocaleString()} to ${userData.name || userId}`);
             loadAdminPanel();
         }
@@ -2433,170 +2428,81 @@
         async function adminSubtractBalance() {
             const userId = document.getElementById('adminAdjustUserSelect').value;
             const amount = parseFloat(document.getElementById('adminAdjustAmount').value);
-            if (!userId || !amount || amount <= 0) {
-                showModal('error', 'Select a user and enter a valid amount');
-                return;
-            }
-            
+            if (!userId || !amount || amount <= 0) { showModal('error', 'Select a user and enter a valid amount'); return; }
             const userRef = db.ref(`users/${userId}`);
             const snapshot = await userRef.once('value');
             const userData = snapshot.val() || {};
             const newBalance = (userData.balance || 0) - amount;
-            if (newBalance < 0) {
-                showModal('error', 'User would have negative balance');
-                return;
-            }
+            if (newBalance < 0) { showModal('error', 'User would have negative balance'); return; }
             await userRef.update({ balance: newBalance });
-            
             showModal('success', `Subtracted ₦${amount.toLocaleString()} from ${userData.name || userId}`);
             loadAdminPanel();
         }
         
         function viewUserDetails(uid) {
             const user = allUsers[uid];
-            if (user) {
-                showModal('info', `User: ${user.name || 'N/A'}\nEmail: ${user.email || 'N/A'}\nBalance: ₦${(user.balance || 0).toLocaleString()}\nUID: ${uid}\nMember Since: ${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}`);
-            }
+            if (user) showModal('info', `User: ${user.name || 'N/A'}\nEmail: ${user.email || 'N/A'}\nBalance: ₦${(user.balance || 0).toLocaleString()}\nUID: ${uid}\nMember Since: ${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}`);
         }
         
         // ========== REFERRAL FUNCTIONS ==========
         function copyReferralLink() {
             const link = document.getElementById('referralLink');
-            if (link) {
-                link.select();
-                document.execCommand('copy');
-                showModal('success', 'Referral link copied! Share with friends to earn 20% bonus!');
-                canvasConfetti({ particleCount: 100, spread: 50, origin: { y: 0.5 } });
-            }
+            if (link) { link.select(); document.execCommand('copy'); showModal('success', 'Referral link copied! Share with friends to earn 20% bonus!'); canvasConfetti({ particleCount: 100, spread: 50, origin: { y: 0.5 } }); }
         }
         
         // ========== SETTINGS FUNCTIONS ==========
         async function updateProfile() {
             const displayName = document.getElementById('displayName').value;
-            
-            if (displayName) {
-                await currentUser.updateProfile({ displayName: displayName });
-                await db.ref(`users/${currentUser.uid}`).update({ name: displayName });
-            }
-            
-            showModal('success', 'Profile updated successfully!');
-            loadUserData();
+            if (displayName) { await currentUser.updateProfile({ displayName: displayName }); await db.ref(`users/${currentUser.uid}`).update({ name: displayName }); }
+            showModal('success', 'Profile updated successfully!'); loadUserData();
         }
         
-        function changePassword() {
-            auth.sendPasswordResetEmail(currentUser.email);
-            showModal('info', 'Password reset email sent to your email address');
-        }
+        function changePassword() { auth.sendPasswordResetEmail(currentUser.email); showModal('info', 'Password reset email sent to your email address'); }
         
-        function setTheme(theme) {
-            document.body.classList.remove('dark', 'light');
-            document.body.classList.add(theme);
-            localStorage.setItem('theme', theme);
-            
-            if (tradingViewWidget) {
-                tradingViewWidget.options.theme = theme === 'dark' ? 'dark' : 'light';
-            }
-        }
+        function setTheme(theme) { document.body.classList.remove('dark', 'light'); document.body.classList.add(theme); localStorage.setItem('theme', theme); if (tradingViewWidget && tradingViewWidget.options) { try { tradingViewWidget.options.theme = theme === 'dark' ? 'dark' : 'light'; } catch(e) {} } }
         
         // ========== CHART FUNCTIONS ==========
-        function changeChartSymbol(symbol) {
-            if (tradingViewWidget) {
-                tradingViewWidget.setSymbol(symbol);
-            }
-        }
+        function changeChartSymbol(symbol) { if (tradingViewWidget && tradingViewWidget.setSymbol) tradingViewWidget.setSymbol(symbol); else console.log('TradingView widget not ready'); }
         
         function initTradingView() {
-            if (typeof TradingView !== 'undefined') {
-                tradingViewWidget = new TradingView.widget({
-                    "width": "100%",
-                    "height": 450,
-                    "symbol": "NASDAQ:AAPL",
-                    "interval": "D",
-                    "timezone": "Africa/Lagos",
-                    "theme": document.body.classList.contains('dark') ? "dark" : "light",
-                    "style": "1",
-                    "locale": "en",
-                    "toolbar_bg": "#f1f3f6",
-                    "enable_publishing": false,
-                    "allow_symbol_change": true,
-                    "container_id": "tradingviewWidget"
-                });
-            }
+            const container = document.getElementById('tradingviewWidget');
+            if (container && typeof TradingView !== 'undefined') {
+                if (tradingViewWidget) container.innerHTML = '';
+                tradingViewWidget = new TradingView.widget({ "width": "100%", "height": 450, "symbol": "NASDAQ:AAPL", "interval": "D", "timezone": "Africa/Lagos", "theme": document.body.classList.contains('dark') ? "dark" : "light", "style": "1", "locale": "en", "toolbar_bg": "#f1f3f6", "enable_publishing": false, "allow_symbol_change": true, "container_id": "tradingviewWidget", "autosize": true });
+            } else if (container) { setTimeout(initTradingView, 1000); }
         }
         
         // ========== AUTH FUNCTIONS ==========
         async function login() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            if (!email || !password) {
-                showModal('error', 'Please enter email and password');
-                return;
-            }
-            try {
-                const result = await auth.signInWithEmailAndPassword(email, password);
-                handleAuthSuccess(result.user);
-            } catch (error) {
-                showModal('error', error.message);
-            }
+            const email = document.getElementById('loginEmail').value, password = document.getElementById('loginPassword').value;
+            if (!email || !password) { showModal('error', 'Please enter email and password'); return; }
+            try { const result = await auth.signInWithEmailAndPassword(email, password); handleAuthSuccess(result.user); } catch (error) { showModal('error', error.message); }
         }
         
         async function googleLogin() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                const result = await auth.signInWithPopup(provider);
-                handleAuthSuccess(result.user);
-            } catch (error) {
-                showModal('error', error.message);
-            }
+            try { const result = await auth.signInWithPopup(provider); handleAuthSuccess(result.user); } catch (error) { showModal('error', error.message); }
         }
         
         async function register() {
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const referralCode = document.getElementById('referralCodeInput').value;
-            
-            if (!name || !email || !password) {
-                showModal('error', 'Please fill all fields');
-                return;
-            }
-            
-            if (password.length < 6) {
-                showModal('error', 'Password must be at least 6 characters');
-                return;
-            }
-            
+            const name = document.getElementById('registerName').value, email = document.getElementById('registerEmail').value, password = document.getElementById('registerPassword').value, referralCode = document.getElementById('referralCodeInput').value;
+            if (!name || !email || !password) { showModal('error', 'Please fill all fields'); return; }
+            if (password.length < 6) { showModal('error', 'Password must be at least 6 characters'); return; }
             try {
                 const result = await auth.createUserWithEmailAndPassword(email, password);
                 await result.user.updateProfile({ displayName: name });
-                
                 const generatedReferralCode = result.user.uid.slice(0, 8).toUpperCase();
-                
-                await db.ref(`users/${result.user.uid}`).set({
-                    name: name,
-                    email: email,
-                    balance: 0,
-                    referralCode: generatedReferralCode,
-                    createdAt: Date.now()
-                });
-                
+                await db.ref(`users/${result.user.uid}`).set({ name: name, email: email, balance: 0, referralCode: generatedReferralCode, createdAt: Date.now() });
                 if (referralCode) {
                     const referrerQuery = await db.ref('users').orderByChild('referralCode').equalTo(referralCode.toUpperCase()).once('value');
                     const referrer = referrerQuery.val();
                     if (referrer) {
                         const referrerId = Object.keys(referrer)[0];
-                        await db.ref(`pendingReferrals/${referrerId}`).push({
-                            referredUser: result.user.uid,
-                            date: Date.now(),
-                            status: 'pending_deposit'
-                        });
+                        await db.ref(`pendingReferrals/${referrerId}`).push({ referredUser: result.user.uid, referrerId: referrerId, date: Date.now(), status: 'pending_deposit' });
                     }
                 }
-                
                 handleAuthSuccess(result.user);
-            } catch (error) {
-                showModal('error', error.message);
-            }
+            } catch (error) { showModal('error', error.message); }
         }
         
         function handleAuthSuccess(user) {
@@ -2604,101 +2510,54 @@
             document.getElementById('authModal').style.display = 'none';
             document.getElementById('landingPage').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            
-            if (user.email === 'jesseegwuatu@gmail.com') {
-                document.getElementById('adminNavDesktop').style.display = 'block';
-                document.getElementById('adminNavMobile').style.display = 'block';
-            }
-            
+            if (user.email === 'jesseegwuatu@gmail.com') { document.getElementById('adminNavDesktop').style.display = 'block'; document.getElementById('adminNavMobile').style.display = 'block'; }
             initializeStocks();
             startPriceSimulation();
             loadUserData();
-            
-            // Setup realtime listeners
             setupRealtimeListeners();
-            
             showSection('dashboard');
-            
-            setTimeout(() => {
-                initTradingView();
-            }, 500);
+            setTimeout(() => { initTradingView(); }, 500);
         }
         
         function logout() {
-            // Clean up listeners
             if (stocksListener) stocksListener.off();
             if (portfolioListener) portfolioListener.off();
             if (userDataListener) userDataListener.off();
             if (transactionsListener) transactionsListener.off();
             if (referralsListener) referralsListener.off();
-            
-            // Clear price simulation interval
-            if (priceSimulationInterval) {
-                clearInterval(priceSimulationInterval);
-                priceSimulationInterval = null;
-            }
-            
-            // Sign out from Firebase
+            if (adminUsersListener) adminUsersListener.off();
+            if (priceSimulationInterval) { clearInterval(priceSimulationInterval); priceSimulationInterval = null; }
             auth.signOut().then(() => {
-                // Reset current user
                 currentUser = null;
-                
-                // Reset UI
                 document.getElementById('app').style.display = 'none';
                 document.getElementById('landingPage').style.display = 'block';
                 document.getElementById('authModal').style.display = 'flex';
-                
-                // Clear any stored data
-                stocksData = {};
-                userPortfolio = {};
-                allUsers = {};
-                
+                stocksData = {}; userPortfolio = {}; allUsers = {};
                 showModal('success', 'You have been logged out successfully!');
-            }).catch((error) => {
-                console.error('Logout error:', error);
-                showModal('error', 'Failed to logout. Please try again.');
-            });
+            }).catch((error) => { console.error('Logout error:', error); showModal('error', 'Failed to logout. Please try again.'); });
         }
         
         function toggleAuthMode() {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            const title = document.getElementById('authModalTitle');
-            
-            if (loginForm.style.display === 'none') {
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
-                title.innerText = 'Login to Vestify';
-            } else {
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
-                title.innerText = 'Register on Vestify';
-            }
+            const loginForm = document.getElementById('loginForm'), registerForm = document.getElementById('registerForm'), title = document.getElementById('authModalTitle');
+            if (loginForm.style.display === 'none') { loginForm.style.display = 'block'; registerForm.style.display = 'none'; title.innerText = 'Login to Vestify'; }
+            else { loginForm.style.display = 'none'; registerForm.style.display = 'block'; title.innerText = 'Register on Vestify'; }
         }
         
-        function showAuthModal() {
-            document.getElementById('authModal').style.display = 'flex';
-        }
+        function showAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
         
         // ========== NAVIGATION FUNCTIONS ==========
         let currentSection = 'dashboard';
-        
         function showSection(section) {
             currentSection = section;
             document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
             const targetSection = document.getElementById(`${section}Section`);
             if (targetSection) targetSection.style.display = 'block';
-            
             if (section === 'trade') loadTradeSelectors();
             if (section === 'admin' && currentUser?.email === 'jesseegwuatu@gmail.com') loadAdminPanel();
             if (section === 'settings') loadUserData();
-            if (section === 'referrals') {
-                loadUserData();
-                updateReferralsList();
-            }
+            if (section === 'referrals') { loadUserData(); updateReferralsList(); }
             if (section === 'withdraw') {
                 populateBankList();
-                
                 const accountNumberField = document.getElementById('accountNumber');
                 if (accountNumberField) {
                     let verificationTimeout;
@@ -2708,155 +2567,45 @@
                         const bankCode = bankSelect.value;
                         const accountNameField = document.getElementById('accountName');
                         const verifiedBadge = document.getElementById('verifiedBadge');
-                        
                         if (verificationTimeout) clearTimeout(verificationTimeout);
-                        
-                        accountNameField.value = '';
-                        accountNameField.readOnly = true;
-                        accountNameField.placeholder = 'Will auto-fill after verification...';
-                        verifiedBadge?.classList.add('hidden');
-                        
+                        accountNameField.value = ''; accountNameField.readOnly = true; accountNameField.placeholder = 'Will auto-fill after verification...';
+                        if (verifiedBadge) verifiedBadge.classList.add('hidden');
                         if (accountNumber.length === 10 && bankCode) {
-                            verificationTimeout = setTimeout(() => {
-                                resolveAccountNumber(bankCode, accountNumber);
-                            }, 1000);
+                            verificationTimeout = setTimeout(() => { resolveAccountNumberPaystack(bankCode, accountNumber); }, 1000);
                         }
                     };
                 }
-                
                 const bankSelectField = document.getElementById('bankSelect');
                 if (bankSelectField) {
                     bankSelectField.onchange = function() {
                         const accountNumber = document.getElementById('accountNumber').value.trim();
-                        if (accountNumber.length === 10 && this.value) {
-                            resolveAccountNumber(this.value, accountNumber);
-                        }
+                        if (accountNumber.length === 10 && this.value) resolveAccountNumberPaystack(this.value, accountNumber);
                     };
                 }
             }
-            
             closeMobileMenu();
         }
         
-        function showTradeSection(symbol) {
-            showSection('trade');
-            setTimeout(() => {
-                const buySelect = document.getElementById('buyStockSelect');
-                if (buySelect) buySelect.value = symbol;
-                updateBuyDetails();
-            }, 100);
-        }
-        
-        function buyStockQuick(symbol) {
-            showTradeSection(symbol);
-        }
-        
-        function scrollToFeatures() {
-            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        function downloadApp() {
-            showModal('info', 'APK download will be available here. Replace with actual APK link.');
-        }
+        function showTradeSection(symbol) { showSection('trade'); setTimeout(() => { const buySelect = document.getElementById('buyStockSelect'); if (buySelect) buySelect.value = symbol; updateBuyDetails(); }, 100); }
+        function buyStockQuick(symbol) { showTradeSection(symbol); }
+        function scrollToFeatures() { document.getElementById('features').scrollIntoView({ behavior: 'smooth' }); }
+        function downloadApp() { showModal('info', 'APK download will be available soon. Stay tuned!'); }
         
         // ========== MOBILE MENU ==========
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('mobileSidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            const hamburger = document.querySelector('.hamburger');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-            hamburger.classList.toggle('active');
-        }
+        function toggleMobileMenu() { const sidebar = document.getElementById('mobileSidebar'); const overlay = document.getElementById('sidebarOverlay'); const hamburger = document.querySelector('.hamburger'); if (sidebar && overlay && hamburger) { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); hamburger.classList.toggle('active'); } }
+        function closeMobileMenu() { const sidebar = document.getElementById('mobileSidebar'); const overlay = document.getElementById('sidebarOverlay'); const hamburger = document.querySelector('.hamburger'); if (sidebar && overlay && hamburger) { sidebar.classList.remove('active'); overlay.classList.remove('active'); hamburger.classList.remove('active'); } }
         
-        function closeMobileMenu() {
-            const sidebar = document.getElementById('mobileSidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            const hamburger = document.querySelector('.hamburger');
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            hamburger.classList.remove('active');
-        }
+        // ========== UTILITY ==========
+        function showModal(type, message) { Swal.fire({ title: type === 'success' ? '🎉 Success!' : type === 'error' ? '⚠️ Error!' : 'ℹ️ Info', text: message, icon: type, background: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff', color: document.body.classList.contains('dark') ? '#ffffff' : '#000000', confirmButtonColor: '#3b82f6', customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-lg px-6 py-2' } }); }
         
-        // ========== UTILITY FUNCTIONS ==========
-        function showModal(type, message) {
-            Swal.fire({
-                title: type === 'success' ? '🎉 Success!' : type === 'error' ? '⚠️ Error!' : 'ℹ️ Info',
-                text: message,
-                icon: type,
-                background: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff',
-                color: document.body.classList.contains('dark') ? '#ffffff' : '#000000',
-                confirmButtonColor: '#3b82f6',
-                customClass: {
-                    popup: 'rounded-2xl',
-                    confirmButton: 'rounded-lg px-6 py-2'
-                }
-            });
-        }
+        // ========== INITIALIZE ==========
+        function initTheme() { const savedTheme = localStorage.getItem('theme') || 'dark'; document.body.classList.add(savedTheme); }
+        document.getElementById('themeToggle').addEventListener('click', () => { const isDark = document.body.classList.contains('dark'); setTheme(isDark ? 'light' : 'dark'); });
+        setTimeout(() => { const loadingOverlay = document.getElementById('loadingOverlay'); if (loadingOverlay) loadingOverlay.style.display = 'none'; document.getElementById('landingPage').style.display = 'block'; initTheme(); }, 3000);
+        auth.onAuthStateChanged((user) => { if (user) handleAuthSuccess(user); else { document.getElementById('app').style.display = 'none'; document.getElementById('landingPage').style.display = 'block'; document.getElementById('authModal').style.display = 'flex'; } });
         
-        // ========== INITIALIZE APP ==========
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            document.body.classList.add(savedTheme);
-        }
-        
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            const isDark = document.body.classList.contains('dark');
-            setTheme(isDark ? 'light' : 'dark');
-        });
-        
-        setTimeout(() => {
-            document.getElementById('loadingOverlay').style.display = 'none';
-            document.getElementById('landingPage').style.display = 'block';
-            initTheme();
-        }, 3000);
-        
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                handleAuthSuccess(user);
-            } else {
-                document.getElementById('app').style.display = 'none';
-                document.getElementById('landingPage').style.display = 'block';
-                document.getElementById('authModal').style.display = 'flex';
-            }
-        });
-        
-        // Make functions globally available
-        window.showSection = showSection;
-        window.executeBuy = executeBuy;
-        window.executeSell = executeSell;
-        window.processDeposit = processDeposit;
-        window.processWithdrawal = processWithdrawal;
-        window.login = login;
-        window.googleLogin = googleLogin;
-        window.register = register;
-        window.logout = logout;
-        window.toggleAuthMode = toggleAuthMode;
-        window.updateBuyDetails = updateBuyDetails;
-        window.updateSellDetails = updateSellDetails;
-        window.updateStockPrice = updateStockPrice;
-        window.adminSendMoney = adminSendMoney;
-        window.adminAddBalance = adminAddBalance;
-        window.adminSubtractBalance = adminSubtractBalance;
-        window.viewUserDetails = viewUserDetails;
-        window.togglePriceSimulation = togglePriceSimulation;
-        window.resetAllPrices = resetAllPrices;
-        window.copyReferralLink = copyReferralLink;
-        window.updateProfile = updateProfile;
-        window.changePassword = changePassword;
-        window.setTheme = setTheme;
-        window.toggleMobileMenu = toggleMobileMenu;
-        window.closeMobileMenu = closeMobileMenu;
-        window.showAuthModal = showAuthModal;
-        window.scrollToFeatures = scrollToFeatures;
-        window.downloadApp = downloadApp;
-        window.buyStockQuick = buyStockQuick;
-        window.showTradeSection = showTradeSection;
-        window.changeChartSymbol = changeChartSymbol;
-        window.enableManualAccountEntry = enableManualAccountEntry;
-        window.updateWithdrawalPreview = updateWithdrawalPreview;
-        window.refreshDashboard = refreshDashboard;
-        window.uploadProfilePicture = uploadProfilePicture;
+        // Expose globals
+        window.showSection = showSection; window.executeBuy = executeBuy; window.executeSell = executeSell; window.processDeposit = processDeposit; window.processWithdrawal = processWithdrawal; window.login = login; window.googleLogin = googleLogin; window.register = register; window.logout = logout; window.toggleAuthMode = toggleAuthMode; window.updateBuyDetails = updateBuyDetails; window.updateSellDetails = updateSellDetails; window.updateStockPrice = updateStockPrice; window.adminSendMoney = adminSendMoney; window.adminAddBalance = adminAddBalance; window.adminSubtractBalance = adminSubtractBalance; window.viewUserDetails = viewUserDetails; window.togglePriceSimulation = togglePriceSimulation; window.resetAllPrices = resetAllPrices; window.copyReferralLink = copyReferralLink; window.updateProfile = updateProfile; window.changePassword = changePassword; window.setTheme = setTheme; window.toggleMobileMenu = toggleMobileMenu; window.closeMobileMenu = closeMobileMenu; window.showAuthModal = showAuthModal; window.scrollToFeatures = scrollToFeatures; window.downloadApp = downloadApp; window.buyStockQuick = buyStockQuick; window.showTradeSection = showTradeSection; window.changeChartSymbol = changeChartSymbol; window.enableManualAccountEntry = enableManualAccountEntry; window.updateWithdrawalPreview = updateWithdrawalPreview; window.refreshDashboard = refreshDashboard; window.uploadProfilePicture = uploadProfilePicture; window.checkAndAwardReferralBonus = checkAndAwardReferralBonus; window.showHistory = showHistory; window.goBackToDashboard = goBackToDashboard;
     </script>
 </body>
 </html>
