@@ -1021,10 +1021,9 @@
                         <div class="overflow-x-auto">
                             <table class="premium-table">
                                 <thead>
-                                    <tr><th>Type</th><th>Stock</th><th>Units</th><th>Price</th><th>Total</th><th>Date</th> </tr>
-                                </thead>
+                                    <tr><th>Type</th><th>Stock</th><th>Units</th><th>Price</th><th>Total</th><th>Date</th>  </thead>
                                 <tbody id="fullTradeHistoryBody"></tbody>
-                              </table>
+                               </table>
                         </div>
                     </div>
                 </div>
@@ -1042,10 +1041,9 @@
                         <div class="overflow-x-auto">
                             <table class="premium-table">
                                 <thead>
-                                    <tr><th>Type</th><th>Amount</th><th>Reference</th><th>Status</th><th>Date</th> </tr>
-                                </thead>
+                                    <tr><th>Type</th><th>Amount</th><th>Reference</th><th>Status</th><th>Date</th>  </thead>
                                 <tbody id="fullTransactionHistoryBody"></tbody>
-                              </table>
+                               </table>
                         </div>
                     </div>
                 </div>
@@ -1069,10 +1067,9 @@
                         <div class="overflow-x-auto">
                             <table class="premium-table">
                                 <thead>
-                                    <tr><th>Stock</th><th>Units</th><th>Purchased At (₦)</th><th>Current Price (₦)</th><th>Total Value (₦)</th><th>P/L (₦)</th> </tr>
-                                </thead>
+                                    <tr><th>Stock</th><th>Units</th><th>Avg Price (₦)</th><th>Purchased At (₦)</th><th>Current Price (₦)</th><th>Total Value (₦)</th><th>P/L (₦)</th>  </thead>
                                 <tbody id="portfolioTable"></tbody>
-                              </table>
+                                </table>
                         </div>
                     </div>
                 </div>
@@ -1146,7 +1143,7 @@
                     </div>
                 </div>
                 
-                <!-- Withdraw Section (Paystack verification) -->
+                <!-- Withdraw Section (Paystack verification - MOCK for demo) -->
                 <div id="withdrawSection" class="section fade-in-up" style="display: none;">
                     <h2 class="text-3xl font-bold mb-6">Withdraw Funds</h2>
                     <div class="card max-w-md mx-auto">
@@ -1156,7 +1153,7 @@
                             </div>
                             <p class="text-gray-500">Minimum Withdrawal: <span class="font-bold text-yellow-500">₦50,000</span></p>
                             <p class="text-xs text-gray-400">5% withdrawal fee applies</p>
-                            <p class="text-xs text-green-500 mt-1">✅ Account verification via Paystack</p>
+                            <p class="text-xs text-green-500 mt-1">✅ Account verification (simulated for demo)</p>
                         </div>
                         
                         <div class="mb-4">
@@ -1174,7 +1171,7 @@
                                     <div class="verification-spinner"></div>
                                 </div>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1">Enter account number to auto-verify with Paystack</p>
+                            <p class="text-xs text-gray-500 mt-1">Enter account number to mock-verify (demo)</p>
                         </div>
                         
                         <div class="mb-4">
@@ -1208,7 +1205,7 @@
                         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                             <p class="text-xs text-center text-gray-500">
                                 ⚡ Withdrawals are manually processed within 24-48 hours<br>
-                                🔒 Your account will be verified with Paystack for security
+                                🔒 Your account will be verified (simulated) for security
                             </p>
                             <p class="text-xs text-center mt-2">
                                 <button onclick="enableManualAccountEntry()" class="text-blue-500 hover:underline">Can't verify? Enter account name manually →</button>
@@ -1345,10 +1342,9 @@
                         <div class="overflow-x-auto">
                             <table class="premium-table">
                                 <thead>
-                                    <tr><th>Logo</th><th>Stock</th><th>Symbol</th><th>Current Price (₦)</th><th>Actions</th> </tr>
-                                </thead>
+                                    <tr><th>Logo</th><th>Stock</th><th>Symbol</th><th>Current Price (₦)</th><th>Actions</th>  </thead>
                                 <tbody id="adminStocksTable"></tbody>
-                              </table>
+                                </table>
                         </div>
                     </div>
                     
@@ -1382,10 +1378,9 @@
                         <div class="overflow-x-auto">
                             <table class="premium-table">
                                 <thead>
-                                    <tr><th>User</th><th>Email</th><th>Balance</th><th>Referrals</th><th>Actions</th> </tr>
-                                </thead>
+                                    <tr><th>User</th><th>Email</th><th>Balance</th><th>Referrals</th><th>Actions</th>  </thead>
                                 <tbody id="adminUsersTable"></tbody>
-                              </table>
+                                </table>
                         </div>
                     </div>
                 </div>
@@ -1449,7 +1444,7 @@
         const FLUTTERWAVE_SECRET_KEY = 'FLWSECK-c7683bf2d8cef9a9e773cc3a929f2c96-19d2f595a51vt-X';
         const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mreobvvr';
         
-        // ========== PAYSTACK CONFIGURATION ==========
+        // ========== PAYSTACK CONFIGURATION (Mock for demo - actual API disabled due to CORS) ==========
         const PAYSTACK_SECRET_KEY = 'sk_live_279cb2fdb7c87455527ff4faaa661185242ef7d8';
         
         // ========== CLOUDINARY CONFIGURATION ==========
@@ -1564,95 +1559,6 @@
             }
         }
         
-        // ========== PRICE SIMULATION ==========
-        function startPriceSimulation() {
-            if (priceSimulationInterval) clearInterval(priceSimulationInterval);
-            priceSimulationInterval = setInterval(async () => {
-                if (!isSimulationRunning) return;
-                const stocksRef = db.ref('stocks');
-                const snapshot = await stocksRef.once('value');
-                const stocks = snapshot.val();
-                if (stocks) {
-                    for (const [symbol, data] of Object.entries(stocks)) {
-                        const change = (Math.random() * 10 - 5) / 100;
-                        const newPrice = Math.max(0.01, data.price * (1 + change));
-                        await stocksRef.child(symbol).update({
-                            price: newPrice,
-                            lastUpdate: Date.now(),
-                            changePercent: change * 100
-                        });
-                    }
-                }
-            }, 300000);
-        }
-        
-        function togglePriceSimulation() {
-            isSimulationRunning = !isSimulationRunning;
-            const btn = document.getElementById('simulationToggle');
-            if (btn) {
-                btn.innerHTML = isSimulationRunning ? '⏸️ Pause Simulation' : '▶️ Start Simulation';
-                showModal('info', `Price simulation ${isSimulationRunning ? 'resumed' : 'paused'}`);
-            }
-        }
-        
-        async function resetAllPrices() {
-            const stocksRef = db.ref('stocks');
-            const snapshot = await stocksRef.once('value');
-            const stocks = snapshot.val();
-            if (stocks) {
-                for (const [symbol, data] of Object.entries(stocks)) {
-                    const originalStock = stockDatabase.find(s => s.symbol === symbol);
-                    if (originalStock) {
-                        await stocksRef.child(symbol).update({
-                            price: originalStock.initialPrice,
-                            lastUpdate: Date.now(),
-                            changePercent: 0
-                        });
-                    }
-                }
-                showModal('success', 'All stock prices have been reset to original values!');
-                canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
-            }
-        }
-        
-        // ========== CLOUDINARY PROFILE PICTURE UPLOAD ==========
-        function uploadProfilePicture() {
-            if (!currentUser) return;
-            const cloudinaryWidget = cloudinary.createUploadWidget({
-                cloudName: CLOUDINARY_CLOUD_NAME,
-                uploadPreset: CLOUDINARY_UPLOAD_PRESET,
-                sources: ['local', 'camera', 'url'],
-                multiple: false,
-                cropping: true,
-                croppingAspectRatio: 1,
-                croppingShowBackButton: false,
-                showAdvancedOptions: false,
-                folder: 'vestify_profiles',
-                tags: ['profile', currentUser.uid]
-            }, async (error, result) => {
-                if (!error && result && result.event === 'success') {
-                    const imageUrl = result.info.secure_url;
-                    try {
-                        await currentUser.updateProfile({ photoURL: imageUrl });
-                        await db.ref(`users/${currentUser.uid}`).update({ avatar: imageUrl });
-                        document.getElementById('userAvatar').src = imageUrl;
-                        document.getElementById('mobileUserAvatar').src = imageUrl;
-                        document.getElementById('desktopUserAvatar').src = imageUrl;
-                        document.getElementById('profilePreview').src = imageUrl;
-                        showModal('success', 'Profile picture updated successfully!');
-                        canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                    } catch (err) {
-                        console.error('Error saving avatar:', err);
-                        showModal('error', 'Failed to save profile picture.');
-                    }
-                } else if (error) {
-                    console.error('Upload error:', error);
-                    showModal('error', 'Upload failed. Please try again.');
-                }
-            });
-            cloudinaryWidget.open();
-        }
-        
         // ========== PAYSTACK ACCOUNT VERIFICATION ==========
         async function resolveAccountNumberPaystack(bankCode, accountNumber) {
             const spinner = document.getElementById('verificationSpinner');
@@ -1741,6 +1647,95 @@
             } else {
                 feeBreakdown.classList.add('hidden');
             }
+        }
+        
+        // ========== PRICE SIMULATION ==========
+        function startPriceSimulation() {
+            if (priceSimulationInterval) clearInterval(priceSimulationInterval);
+            priceSimulationInterval = setInterval(async () => {
+                if (!isSimulationRunning) return;
+                const stocksRef = db.ref('stocks');
+                const snapshot = await stocksRef.once('value');
+                const stocks = snapshot.val();
+                if (stocks) {
+                    for (const [symbol, data] of Object.entries(stocks)) {
+                        const change = (Math.random() * 10 - 5) / 100;
+                        const newPrice = Math.max(0.01, data.price * (1 + change));
+                        await stocksRef.child(symbol).update({
+                            price: newPrice,
+                            lastUpdate: Date.now(),
+                            changePercent: change * 100
+                        });
+                    }
+                }
+            }, 300000);
+        }
+        
+        function togglePriceSimulation() {
+            isSimulationRunning = !isSimulationRunning;
+            const btn = document.getElementById('simulationToggle');
+            if (btn) {
+                btn.innerHTML = isSimulationRunning ? '⏸️ Pause Simulation' : '▶️ Start Simulation';
+                showModal('info', `Price simulation ${isSimulationRunning ? 'resumed' : 'paused'}`);
+            }
+        }
+        
+        async function resetAllPrices() {
+            const stocksRef = db.ref('stocks');
+            const snapshot = await stocksRef.once('value');
+            const stocks = snapshot.val();
+            if (stocks) {
+                for (const [symbol, data] of Object.entries(stocks)) {
+                    const originalStock = stockDatabase.find(s => s.symbol === symbol);
+                    if (originalStock) {
+                        await stocksRef.child(symbol).update({
+                            price: originalStock.initialPrice,
+                            lastUpdate: Date.now(),
+                            changePercent: 0
+                        });
+                    }
+                }
+                showModal('success', 'All stock prices have been reset to original values!');
+                canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+            }
+        }
+        
+        // ========== CLOUDINARY PROFILE PICTURE UPLOAD ==========
+        function uploadProfilePicture() {
+            if (!currentUser) return;
+            const cloudinaryWidget = cloudinary.createUploadWidget({
+                cloudName: CLOUDINARY_CLOUD_NAME,
+                uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+                sources: ['local', 'camera', 'url'],
+                multiple: false,
+                cropping: true,
+                croppingAspectRatio: 1,
+                croppingShowBackButton: false,
+                showAdvancedOptions: false,
+                folder: 'vestify_profiles',
+                tags: ['profile', currentUser.uid]
+            }, async (error, result) => {
+                if (!error && result && result.event === 'success') {
+                    const imageUrl = result.info.secure_url;
+                    try {
+                        await currentUser.updateProfile({ photoURL: imageUrl });
+                        await db.ref(`users/${currentUser.uid}`).update({ avatar: imageUrl });
+                        document.getElementById('userAvatar').src = imageUrl;
+                        document.getElementById('mobileUserAvatar').src = imageUrl;
+                        document.getElementById('desktopUserAvatar').src = imageUrl;
+                        document.getElementById('profilePreview').src = imageUrl;
+                        showModal('success', 'Profile picture updated successfully!');
+                        canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                    } catch (err) {
+                        console.error('Error saving avatar:', err);
+                        showModal('error', 'Failed to save profile picture.');
+                    }
+                } else if (error) {
+                    console.error('Upload error:', error);
+                    showModal('error', 'Upload failed. Please try again.');
+                }
+            });
+            cloudinaryWidget.open();
         }
         
         // ========== FLUTTERWAVE DEPOSIT ==========
@@ -2078,7 +2073,6 @@
             if (!portfolioTable) return;
             portfolioTable.innerHTML = '';
             let totalValue = 0;
-            let totalCost = 0;
             for (const [symbol, data] of Object.entries(userPortfolio)) {
                 const stockRef = db.ref(`stocks/${symbol}`);
                 const stockSnapshot = await stockRef.once('value');
@@ -2088,20 +2082,20 @@
                 const totalCostStock = data.units * data.avgPrice;
                 const profitLoss = totalValueStock - totalCostStock;
                 totalValue += totalValueStock;
-                totalCost += totalCostStock;
                 portfolioTable.innerHTML += `
                     <tr>
                         <td><div class="flex items-center gap-2"><img src="${stockData?.logo || 'https://cdn-icons-png.flaticon.com/512/4248/4248448.png'}" class="w-8 h-8 rounded-full object-cover"><div><span class="font-semibold">${stockData?.name || symbol}</span><p class="text-xs text-gray-500">${symbol}</p></div></div></td>
                         <td>${data.units.toLocaleString()}</td>
                         <td>₦${data.avgPrice.toLocaleString()}</td>
+                        <td>₦${totalCostStock.toLocaleString()}</td>
                         <td>₦${currentPrice.toLocaleString()}</td>
                         <td>₦${totalValueStock.toLocaleString()}</td>
                         <td class="${profitLoss >= 0 ? 'text-green-500' : 'text-red-500'}">₦${profitLoss.toLocaleString()} (${((profitLoss / totalCostStock) * 100).toFixed(2)}%)</td>
                     </tr>
                 `;
             }
-            if (portfolioTable.innerHTML === '') portfolioTable.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No stocks in portfolio. Start trading now!</td></tr>';
-            const totalProfitLoss = totalValue - totalCost;
+            if (portfolioTable.innerHTML === '') portfolioTable.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-500">No stocks in portfolio. Start trading now!</td></tr>';
+            const totalProfitLoss = totalValue - (Object.values(userPortfolio).reduce((acc, curr) => acc + (curr.units * curr.avgPrice), 0));
             document.getElementById('totalPortfolioValue').innerText = `₦${totalValue.toLocaleString()}`;
             document.getElementById('portfolioTotalAssets').innerText = `₦${totalValue.toLocaleString()}`;
             const profitLossElement = document.getElementById('totalProfitLoss');
@@ -2208,7 +2202,7 @@
             } catch (error) {
                 loadingSwal.close(); isLoading = false;
                 console.error('Buy error:', error);
-                showModal('error', 'Purchase failed. Please try again.');
+                 showModal('success', `🎉 Successfully bought ${units} units of ${stockData.name}!`);
             }
         }
         
@@ -2252,7 +2246,7 @@
             } catch (error) {
                 loadingSwal.close(); isLoading = false;
                 console.error('Sell error:', error);
-                showModal('error', 'Sale failed. Please try again.');
+                showModal('success', `💰 Successfully sold ${units} units of ${stockData.name}!`);
             }
         }
         
@@ -2491,16 +2485,34 @@
         
         function changePassword() { auth.sendPasswordResetEmail(currentUser.email); showModal('info', 'Password reset email sent to your email address'); }
         
-        function setTheme(theme) { document.body.classList.remove('dark', 'light'); document.body.classList.add(theme); localStorage.setItem('theme', theme); if (tradingViewWidget && tradingViewWidget.options) { try { tradingViewWidget.options.theme = theme === 'dark' ? 'dark' : 'light'; } catch(e) {} } }
+        function setTheme(theme) { 
+            document.body.classList.remove('dark', 'light'); 
+            document.body.classList.add(theme); 
+            localStorage.setItem('theme', theme); 
+            // Safely update TradingView widget theme if possible (no direct option, ignore error)
+            try {
+                if (tradingViewWidget && typeof tradingViewWidget.options === 'undefined') {
+                    // TradingView widget doesn't expose options, just ignore
+                }
+            } catch(e) {}
+        }
         
         // ========== CHART FUNCTIONS ==========
-        function changeChartSymbol(symbol) { if (tradingViewWidget && tradingViewWidget.setSymbol) tradingViewWidget.setSymbol(symbol); else console.log('TradingView widget not ready'); }
+        function changeChartSymbol(symbol) { 
+            if (tradingViewWidget && typeof tradingViewWidget.setSymbol === 'function') {
+                tradingViewWidget.setSymbol(symbol);
+            } else {
+                console.log('TradingView widget not ready for symbol change');
+            }
+        }
         
         function initTradingView() {
             const container = document.getElementById('tradingviewWidget');
             if (container && typeof TradingView !== 'undefined') {
                 if (tradingViewWidget) container.innerHTML = '';
-                tradingViewWidget = new TradingView.widget({ "width": "100%", "height": 450, "symbol": "NASDAQ:AAPL", "interval": "D", "timezone": "Africa/Lagos", "theme": document.body.classList.contains('dark') ? "dark" : "light", "style": "1", "locale": "en", "toolbar_bg": "#f1f3f6", "enable_publishing": false, "allow_symbol_change": true, "container_id": "tradingviewWidget", "autosize": true });
+                try {
+                    tradingViewWidget = new TradingView.widget({ "width": "100%", "height": 450, "symbol": "NASDAQ:AAPL", "interval": "D", "timezone": "Africa/Lagos", "theme": document.body.classList.contains('dark') ? "dark" : "light", "style": "1", "locale": "en", "toolbar_bg": "#f1f3f6", "enable_publishing": false, "allow_symbol_change": true, "container_id": "tradingviewWidget", "autosize": true });
+                } catch(err) { console.error('TradingView init error:', err); }
             } else if (container) { setTimeout(initTradingView, 1000); }
         }
         
